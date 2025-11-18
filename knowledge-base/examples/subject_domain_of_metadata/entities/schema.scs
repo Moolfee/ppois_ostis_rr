@@ -1,0 +1,15 @@
+dc_schema
+<- concept_metadata_schema;
+=> nrel_main_idtf:
+    [схема Dublin Core]
+    (*
+        <- lang_ru;;
+    *);;
+
+dcat_schema
+<- concept_metadata_schema;
+=> nrel_main_idtf:
+    [схема DCAT]
+    (*
+        <- lang_ru;;
+    *);;

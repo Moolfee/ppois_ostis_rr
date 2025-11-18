@@ -1,0 +1,17 @@
+validator_Zotov
+<- concept_metadata_validator;
+=> nrel_fio:
+    [Зотов Н. В.]
+    (*
+        <- lang_ru;;
+    *);;
+
+validator_Dorosh
+<- concept_metadata_validator;
+=> nrel_fio:
+    [Дорош М. Д.]
+    (*
+        <- lang_ru;;
+    *);;
+
+

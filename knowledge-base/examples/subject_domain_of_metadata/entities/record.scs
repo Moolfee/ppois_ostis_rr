@@ -1,0 +1,31 @@
+record_maosis_guide
+<- concept_metadata_record;
+=> nrel_main_idtf:
+    [методичка по МаОсИС]
+    (*
+        <- lang_ru;;
+    *);
+=> nrel_conforms_to:
+    dc_schema;
+=> nrel_validator:
+    validator_Zotov;
+    validator_Dorosh;
+=> nrel_user:
+    user_Svirid;
+    user_Kulkin;
+    user_Makavchik;;
+
+record_anitsmoking_presintation
+<- concept_metadata_record;
+=> nrel_main_idtf:
+    [презентация о вреде курения]
+    (*
+        <- lang_ru;;
+    *);
+=> nrel_conforms_to:
+    dcat_schema;
+=> nrel_validator:
+    validator_Dorosh;
+=> nrel_user:
+    user_Svirid;
+    user_Kulkin;;

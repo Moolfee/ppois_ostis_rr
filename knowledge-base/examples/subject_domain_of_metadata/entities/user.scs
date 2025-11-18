@@ -1,0 +1,25 @@
+user_Svirid
+<- concept_metadata_user;
+=> nrel_fio:
+    [Свирид Р. Д.]
+    (*
+        <- lang_ru;;
+    *);;
+
+user_Kulkin
+<- concept_metadata_user;
+=> nrel_fio:
+    [Кулькин И. А.]
+    (*
+        <- lang_ru;;
+    *);;
+
+user_Makavchik
+<- concept_metadata_user;
+=> nrel_fio:
+    [Маквачик И. А.]
+    (*
+        <- lang_ru;;
+    *);;
+
+

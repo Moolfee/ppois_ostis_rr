@@ -1,0 +1,38 @@
+@template_search_validator = {
+    rrel_init_template: {
+        rrel_template: [*
+            @input_param1 = (.._data_record <-_ concept_metadata_record);;
+            nrel_validator _-> (.._data_record _=> .._validator);;
+            @output_param1 = (.._validator <-_ concept_metadata_validator);;
+        *];
+        rrel_template_input_params: { 
+            @input_param1 
+        };
+        rrel_template_output_params: {
+            @output_param1 
+        }
+    } (* <- nrel_search_set_template;; *);
+    rrel_next_template: {
+        rrel_init_template: {
+            rrel_template: [*
+                @input_param1 = (.._validator <-_ concept_metadata_validator);;
+                nrel_fio _-> (.._validator _=> .._name);;
+                @output_param1 = (.._name <-_ lang_ru);;
+            *];
+            rrel_template_input_params: {
+                @input_param1 
+            };
+            rrel_template_output_params: {
+                @output_param1 
+            }
+        } (* <- nrel_search_set_template;; *)
+    } (* <- nrel_fixed_search_strategy_template;; *)
+};;
+
+@template_search_validator
+<- nrel_fixed_search_strategy_template;
+=> nrel_main_idtf:
+    [Шаблон поиска валидатора по записи]
+    (*
+        <- lang_ru;; 
+    *);;
