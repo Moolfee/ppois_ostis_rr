@@ -1,0 +1,16 @@
+square_mira
+<- concept_square;
+=> nrel_main_idtf:
+    [площадь Мира]
+    (*
+        <- lang_ru;;
+    *);;
+
+
+square_pobedy
+<- concept_square;
+=> nrel_main_idtf:
+    [площадь Победы]
+    (*
+        <- lang_ru;;
+    *);;

@@ -1,0 +1,112 @@
+street_lenina
+<- concept_street;
+=> nrel_main_idtf:
+    [ул. Ленина]
+    (*
+        <- lang_ru;;
+    *);
+=> nrel_length:
+    [1.2]
+    (*
+        <- concept_number;; // спросить
+    *);
+=> nrel_connects:
+    {
+        square_mira;
+        lenina_sovetskaya_intersection
+    };;
+
+
+street_sovetskaya
+<- concept_street;
+=> nrel_main_idtf:
+    [ул. Советская]
+    (*
+        <- lang_ru;;
+    *);
+=> nrel_length:
+    [0.8]
+    (*
+        <- concept_number;;
+    *);
+=> nrel_connects:
+    {
+        lenina_sovetskaya_intersection;
+        sovetskaya_pushkina_intersection
+    };;
+
+
+street_pushkina
+<- concept_street;
+=> nrel_main_idtf:
+    [ул. Пушкина]
+    (*
+        <- lang_ru;;
+    *);
+=> nrel_length:
+    [1.5]
+    (*
+        <- concept_number;;
+    *);
+=> nrel_connects:
+    {
+        sovetskaya_pushkina_intersection;
+        square_pobedy
+    };;
+
+
+avenue_gagarina
+<- concept_street;
+=> nrel_main_idtf:
+    [пр. Гагарина]
+    (*
+        <- lang_ru;;
+    *);
+=> nrel_length:
+    [2.1]
+    (*
+        <- concept_number;;
+    *);
+=> nrel_connects:
+    {
+        square_mira;
+        square_pobedy
+    };;
+
+
+street_mira
+<- concept_street;
+=> nrel_main_idtf:
+    [ул. Мира]
+    (*
+        <- lang_ru;;
+    *);
+=> nrel_length:
+    [0.6]
+    (*
+        <- concept_number;; //вопрос
+    *);
+=> nrel_connects:
+    {
+        lenina_mira_intersection;
+        gagarin_mira_intersection
+    };;
+
+
+street_parkovaya
+<- concept_street;
+=> nrel_main_idtf:
+    [ул. Парковая]
+    (*
+        <- lang_ru;;
+    *);
+=> nrel_length:
+    [0.9]
+    (*
+        <- concept_number;; // вопрос
+    *);
+=> nrel_connects:
+    {
+        pushkina_parkovaya_intersection;
+        parkovaya_gagarin_intersection
+    };;
