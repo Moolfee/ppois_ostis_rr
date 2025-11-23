@@ -1,0 +1,54 @@
+lenina_sovetskaya_intersection
+<- concept_intersection;
+=> nrel_main_idtf:
+    [перекресток ул. Ленина и ул. Советская]
+    (*
+        <- lang_ru;;
+    *);;
+
+
+sovetskaya_pushkina_intersection
+<- concept_intersection;
+=> nrel_main_idtf:
+    [перекресток ул. Советская и ул. Пушкина]
+    (*
+        <- lang_ru;;
+    *);;
+
+
+lenina_mira_intersection
+<- concept_intersection;
+=> nrel_main_idtf:
+    [перекресток ул. Ленина и ул. Мира]
+    (*
+        <- lang_ru;;
+    *);;
+
+
+gagarin_mira_intersection
+<- concept_intersection;
+=> nrel_main_idtf:
+    [перекресток пр. Гагарина и ул. Мира]
+    (*
+        <- lang_ru;;
+    *);;
+
+
+pushkina_parkovaya_intersection
+<- concept_intersection;
+=> nrel_main_idtf:
+    [перекресток ул. Пушкина и ул. Парковая]
+    (*
+        <- lang_ru;;
+    *);;
+
+
+parkovaya_gagarin_intersection
+<- concept_intersection;
+=> nrel_main_idtf:
+    [перекресток ул. Парковая и пр. Гагарина]
+    (*
+        <- lang_ru;;
+    *);;
+
+

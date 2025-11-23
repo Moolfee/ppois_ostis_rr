@@ -1,0 +1,7 @@
+concept_intersection
+<- sc_node_class;
+=> nrel_main_idtf:
+    [точка пересечения улиц]
+    (*
+        <- lang_ru;;
+    *);;
