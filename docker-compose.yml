@@ -1,5 +1,6 @@
 services:
   web:
+    container_name: web
     image: ostis/sc-web:0.9.0
     build:
       context: ./interface/sc-web
@@ -15,13 +16,14 @@ services:
         condition: service_healthy
 
   machine:
+    container_name: machine
     image: ostis/sc-machine:0.10.0
     build:
       context: ./
     restart: unless-stopped
     volumes:
       # TODO(NikitaZotov): Don't load all project sources to volume to build knowledge-base.
-      - ./:/knowledge-base
+      - ./:/knowledge-base:Z
       - kb-binary:/kb.bin
     networks:
       - sc-machine
