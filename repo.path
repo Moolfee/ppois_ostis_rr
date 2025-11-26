@@ -1,7 +1,9 @@
-# components
-knowledge-base/
-!knowledge-base/ims.ostis.kb/ui/menu/ui_main_menu.scs
+# ===== BASE KNOWLEDGE =====
+knowledge-base/ims.ostis.kb/
+knowledge-base/non_subject_domain_concepts/
+knowledge-base/subject_domain_of_fixed_search_strategy_templates/
+knowledge-base/subject_domain_of_transport_accessibility/
+knowledge-base/ui_menu/
 
-# specifications
-problem-solver/cxx/example-module/specifications/agent_of_isomorphic_search
-problem-solver/cxx/example-module/specifications/agent_of_subdividing_search
+# ===== PROBLEM SOLVER (C++) =====
+problem-solver/transport-accessibility-module/
