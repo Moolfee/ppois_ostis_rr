@@ -1,0 +1,25 @@
+action_find_shortest_paths
+<- sc_node_class;
+<- concept_class;
+=> nrel_main_idtf:
+    [действие поиска кратчайших путей]
+    (* 
+        <- lang_ru;;
+    *);
+    [action to find shortest paths]
+    (*
+        <- lang_en;;
+    *);
+<= nrel_inclusion:
+    concept_route_action;;
+
+..shortest_paths_action
+    <- action_find_shortest_paths;
+    <- action_initiated;
+    -> rrel_1: ..transport_graph;;
+
+..shortest_paths_action
+    => nrel_result: [*
+        ..shortest_paths_report
+            <- sc_node_structure;;
+    *];;

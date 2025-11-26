@@ -1,4 +1,4 @@
-action_brirdge_edges
+action_find_bridge_edges
 <- sc_node_class;
 <- concept_class;
 => nrel_main_idtf:
@@ -12,3 +12,14 @@ action_brirdge_edges
     *);
 <= nrel_inclusion:
     concept_route_action;;
+
+..bridge_edges_action
+    <- action_find_bridge_edges;
+    <- action_initiated;
+    -> rrel_1: ..transport_graph;;
+
+..bridge_edges_action
+    => nrel_result: [*
+        ..bridge_edges_set
+            <- sc_node_tuple;;
+    *];;

@@ -1,4 +1,4 @@
-action_set_diameter
+action_calculate_diameter
 <- sc_node_class;
 <- concept_class;
 => nrel_main_idtf:
@@ -12,3 +12,14 @@ action_set_diameter
     *);
 <= nrel_inclusion:
     concept_route_action;;
+
+..diameter_action
+    <- action_calculate_diameter;
+    <- action_initiated;
+    -> rrel_1: ..transport_graph;;
+
+..diameter_action
+    => nrel_result: [*
+        ..transport_graph
+            => nrel_diameter: ..diameter_value;;
+    *];;

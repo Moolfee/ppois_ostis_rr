@@ -1,9 +1,13 @@
-nrel_connects
+﻿nrel_shortest_route
 <- sc_node_non_role_relation;
 => nrel_main_idtf:
     [кратчайший маршрут*]
     (*
         <- lang_ru;;
+    *);
+    [shortest route*]
+    (*
+        <- lang_en;;
     *);
 => nrel_first_domain:
     concept_city_set_of_administrative_units;

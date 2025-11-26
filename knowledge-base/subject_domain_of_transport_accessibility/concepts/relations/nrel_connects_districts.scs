@@ -5,6 +5,10 @@ nrel_connects_districts
     (*
         <- lang_ru;;
     *);
+    [connects districts*]
+    (*
+        <- lang_en;;
+    *);
 => nrel_first_domain:
     concept_public_transport_route;
 => nrel_second_domain:

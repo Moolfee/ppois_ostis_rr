@@ -2,7 +2,7 @@ concept_city_set_of_administrative_units
 <- sc_node_class;
 <- concept_class;
 => nrel_main_idtf:
-    [монжество городских административных единиц]
+    [множество городских административных единиц]
     (*
         <- lang_ru;;
     *);
@@ -11,4 +11,4 @@ concept_city_set_of_administrative_units
         <- lang_en;;
     *);
 => nrel_inclusion:
-    concept_district;
+    concept_district;;

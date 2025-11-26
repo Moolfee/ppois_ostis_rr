@@ -1,4 +1,4 @@
-action_central_district
+action_find_central_district
 <- sc_node_class;
 <- concept_class;
 => nrel_main_idtf:
@@ -12,3 +12,14 @@ action_central_district
     *);
 <= nrel_inclusion:
     concept_route_action;;
+
+..central_district_action
+    <- action_find_central_district;
+    <- action_initiated;
+    -> rrel_1: ..transport_graph;;
+
+..central_district_action
+    => nrel_result: [*
+        ..central_district
+            <- concept_district;;
+    *];;

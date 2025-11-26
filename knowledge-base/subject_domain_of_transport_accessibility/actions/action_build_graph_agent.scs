@@ -12,3 +12,15 @@ action_build_graph
     *);
 <= nrel_inclusion:
     concept_route_action;;
+
+..build_graph_action
+    <- action_build_graph;
+    <- action_initiated;
+    -> rrel_1: ..districts_set;
+    -> rrel_2: ..routes_set;;
+
+..build_graph_action
+    => nrel_result: [*
+        ..transport_graph
+            <- sc_node_structure;;
+    *];;

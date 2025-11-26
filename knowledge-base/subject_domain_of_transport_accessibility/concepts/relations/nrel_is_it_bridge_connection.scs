@@ -1,0 +1,15 @@
+﻿nrel_is_it_bridge_connection
+<- sc_node_non_role_relation;
+=> nrel_main_idtf:
+    [мостовое соединение*]
+    (*
+        <- lang_ru;;
+    *);
+    [bridge connection*]
+    (*
+        <- lang_en;;
+    *);
+=> nrel_first_domain:
+    concept_public_transport_route;
+=> nrel_second_domain:
+    sc_node_tuple;;

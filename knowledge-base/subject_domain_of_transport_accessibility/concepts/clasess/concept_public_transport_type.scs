@@ -11,4 +11,4 @@ concept_public_transport_type
         <- lang_en;;
     *);
 <= nrel_inclusion:
-    concept_public_transport_route;
+    concept_public_transport_route;;

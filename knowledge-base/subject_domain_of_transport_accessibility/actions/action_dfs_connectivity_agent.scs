@@ -1,4 +1,4 @@
-action_dfs_connectivity
+action_check_DFS_connectivity
 <- sc_node_class;
 <- concept_class;
 => nrel_main_idtf:
@@ -12,3 +12,14 @@ action_dfs_connectivity
     *);
 <= nrel_inclusion:
     concept_route_action;;
+
+..dfs_connectivity_action
+    <- action_check_DFS_connectivity;
+    <- action_initiated;
+    -> rrel_1: ..transport_graph;;
+
+..dfs_connectivity_action
+    => nrel_result: [*
+        ..transport_graph
+            => nrel_unreachable_districts: ..unreachable_set;;
+    *];;
