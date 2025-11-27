@@ -1,5 +1,6 @@
 street_lenina
 <- concept_street;
+<- concept_street_network;
 => nrel_main_idtf:
     [ул. Ленина]
     (*
@@ -8,7 +9,7 @@ street_lenina
 => nrel_length:
     [1.2]
     (*
-        <- concept_number;; // спросить
+        <- sc_link;;
     *);
 => nrel_connects:
     {
@@ -19,6 +20,7 @@ street_lenina
 
 street_sovetskaya
 <- concept_street;
+<- concept_street_network;
 => nrel_main_idtf:
     [ул. Советская]
     (*
@@ -27,7 +29,7 @@ street_sovetskaya
 => nrel_length:
     [0.8]
     (*
-        <- concept_number;;
+        <- sc_link;;
     *);
 => nrel_connects:
     {
@@ -38,6 +40,7 @@ street_sovetskaya
 
 street_pushkina
 <- concept_street;
+<- concept_street_network;
 => nrel_main_idtf:
     [ул. Пушкина]
     (*
@@ -46,7 +49,7 @@ street_pushkina
 => nrel_length:
     [1.5]
     (*
-        <- concept_number;;
+        <- sc_link;;
     *);
 => nrel_connects:
     {
@@ -57,6 +60,7 @@ street_pushkina
 
 avenue_gagarina
 <- concept_street;
+<- concept_street_network;
 => nrel_main_idtf:
     [пр. Гагарина]
     (*
@@ -65,7 +69,7 @@ avenue_gagarina
 => nrel_length:
     [2.1]
     (*
-        <- concept_number;;
+        <- sc_link;;
     *);
 => nrel_connects:
     {
@@ -76,6 +80,7 @@ avenue_gagarina
 
 street_mira
 <- concept_street;
+<- concept_street_network;
 => nrel_main_idtf:
     [ул. Мира]
     (*
@@ -84,7 +89,7 @@ street_mira
 => nrel_length:
     [0.6]
     (*
-        <- concept_number;; //вопрос
+        <- sc_link;;
     *);
 => nrel_connects:
     {
@@ -95,6 +100,7 @@ street_mira
 
 street_parkovaya
 <- concept_street;
+<- concept_street_network;
 => nrel_main_idtf:
     [ул. Парковая]
     (*
@@ -103,7 +109,7 @@ street_parkovaya
 => nrel_length:
     [0.9]
     (*
-        <- concept_number;; // вопрос
+        <- sc_link;;
     *);
 => nrel_connects:
     {
