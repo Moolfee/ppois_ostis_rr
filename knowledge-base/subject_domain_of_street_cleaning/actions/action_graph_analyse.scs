@@ -5,4 +5,4 @@ action_graph_analyse
     [действие анализа графа]
     (* 
         <- lang_ru;;
-    *);
+    *);;

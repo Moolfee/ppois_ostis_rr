@@ -1,6 +1,6 @@
 lenina_sovetskaya_intersection
 <- concept_intersection;
-<- concept_street_network;
+<- example_network;
 => nrel_main_idtf:
     [перекресток ул. Ленина и ул. Советская]
     (*
@@ -10,7 +10,7 @@ lenina_sovetskaya_intersection
 
 sovetskaya_pushkina_intersection
 <- concept_intersection;
-<- concept_street_network;
+<- example_network;
 => nrel_main_idtf:
     [перекресток ул. Советская и ул. Пушкина]
     (*
@@ -20,7 +20,7 @@ sovetskaya_pushkina_intersection
 
 lenina_mira_intersection
 <- concept_intersection;
-<- concept_street_network;
+<- example_network;
 => nrel_main_idtf:
     [перекресток ул. Ленина и ул. Мира]
     (*
@@ -30,7 +30,7 @@ lenina_mira_intersection
 
 gagarin_mira_intersection
 <- concept_intersection;
-<- concept_street_network;
+<- example_network;
 => nrel_main_idtf:
     [перекресток пр. Гагарина и ул. Мира]
     (*
@@ -40,7 +40,7 @@ gagarin_mira_intersection
 
 pushkina_parkovaya_intersection
 <- concept_intersection;
-<- concept_street_network;
+<- example_network;
 => nrel_main_idtf:
     [перекресток ул. Пушкина и ул. Парковая]
     (*
@@ -50,7 +50,7 @@ pushkina_parkovaya_intersection
 
 parkovaya_gagarin_intersection
 <- concept_intersection;
-<- concept_street_network;
+<- example_network;
 => nrel_main_idtf:
     [перекресток ул. Парковая и пр. Гагарина]
     (*

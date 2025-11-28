@@ -1,6 +1,6 @@
 square_mira
 <- concept_square;
-<- concept_street_network;
+<- example_network;
 => nrel_main_idtf:
     [площадь Мира]
     (*
@@ -10,7 +10,7 @@ square_mira
 
 square_pobedy
 <- concept_square;
-<- concept_street_network;
+<- example_network;
 => nrel_main_idtf:
     [площадь Победы]
     (*

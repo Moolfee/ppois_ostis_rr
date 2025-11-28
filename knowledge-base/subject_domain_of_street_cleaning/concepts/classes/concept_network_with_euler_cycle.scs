@@ -4,4 +4,4 @@ concept_network_with_euler_cycle
     [граф с циклом Эйлера]
     (*
         <- lang_ru;;
-    *);
+    *);;
