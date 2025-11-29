@@ -1,5 +1,5 @@
 square_mira
-<- concept_square;
+<- concept_intersection;
 <- example_network;
 => nrel_main_idtf:
     [площадь Мира]
@@ -9,7 +9,7 @@ square_mira
 
 
 square_pobedy
-<- concept_square;
+<- concept_intersection;
 <- example_network;
 => nrel_main_idtf:
     [площадь Победы]

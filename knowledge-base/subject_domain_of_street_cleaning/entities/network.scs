@@ -4,4 +4,6 @@ example_network
     [пример сети]
     (*
         <- lang_ru;;
-    *);;
+    *);
+->rrel_start:
+    square_mira;;

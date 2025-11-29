@@ -4,6 +4,9 @@
 
 #include "keynodes/StreetCleaningKeynodes.hpp"
 
+#include <exception>
+#include <string>
+
 ScAddr GraphAnalysisAgent::GetActionClass() const
 {
   return StreetCleaningKeynodes::action_graph_analyse;
@@ -19,7 +22,10 @@ ScResult GraphAnalysisAgent::DoProgram(ScAction & action)
     return action.FinishWithError();
   }
 
+  m_logger.Info("Начало анализа сети: " + m_context.GetElementSystemIdentifier(networkAddr));
   ScAddrToValueUnorderedMap<int> vertexes = CalculateVertexesDegrees(networkAddr);
+
+  m_logger.Info("Рассчет вершин окончен. Найдено: " + std::to_string(vertexes.size()) + " вершин.");
 
   EulerianStatus graphStatus;
   graphStatus = GetGraphEulerianStatus(networkAddr, vertexes);
@@ -37,28 +43,41 @@ ScResult GraphAnalysisAgent::DoProgram(ScAction & action)
 ScAddrToValueUnorderedMap<int> GraphAnalysisAgent::CalculateVertexesDegrees(ScAddr const & networkAddr)
 {
   ScAddrToValueUnorderedMap<int> vertexes;
+  m_logger.Debug("Поиск перекрестков...");
 
-  ScIterator3Ptr const networkIt3 =
-      m_context.CreateIterator3(networkAddr, ScType::ConstPermPosArc, StreetCleaningKeynodes::concept_intersection);
+  ScIterator3Ptr const networkIt3 = m_context.CreateIterator3(networkAddr, ScType::ConstPermPosArc, ScType::Unknown);
 
   while (networkIt3->Next())
   {
     ScAddr const vertexAddr = networkIt3->Get(2);
-    int degree = 0;
 
-    ScIterator5Ptr const vertexIt5 = m_context.CreateIterator5(
-        StreetCleaningKeynodes::concept_street,
-        ScType::ConstCommonArc,
-        vertexAddr,
-        ScType::ConstPermPosArc,
-        StreetCleaningKeynodes::nrel_connects);
+    ScIterator3Ptr const isIntersectionIt =
+        m_context.CreateIterator3(StreetCleaningKeynodes::concept_intersection, ScType::ConstPermPosArc, vertexAddr);
 
-    while (vertexIt5->Next())
+    if (isIntersectionIt->Next())
     {
-      degree++;
-    }
+      int degree = 0;
+      ScIterator5Ptr const vertexIt5 = m_context.CreateIterator5(
+          ScType::Unknown,
+          ScType::ConstCommonArc,
+          vertexAddr,
+          ScType::ConstPermPosArc,
+          StreetCleaningKeynodes::nrel_connects);
 
-    vertexes[vertexAddr] = degree;
+      while (vertexIt5->Next())
+      {
+        degree++;
+      }
+
+      m_logger.Info(
+          "Найден перекресток: "
+          + (m_context.GetElementSystemIdentifier(vertexAddr).empty()
+                 ? "addr:" + std::to_string(vertexAddr.Hash())
+                 : m_context.GetElementSystemIdentifier(vertexAddr))
+          + " | Степень: " + std::to_string(degree));
+
+      vertexes[vertexAddr] = degree;
+    }
   }
 
   return vertexes;
@@ -86,6 +105,7 @@ EulerianStatus GraphAnalysisAgent::GetGraphEulerianStatus(
         startBfsNode = vertex;
     }
   }
+  m_logger.Debug("Количество нечетных вершин: " + std::to_string(oddDegreeCount));
 
   ScAddrSet visitedIntersections;
   ScAddrQueue queue;
@@ -157,16 +177,29 @@ ScStructure GraphAnalysisAgent::CreateAnalysisResult(
     resultStructure << graphType;
   }
 
+  resultStructure << networkAddr;
+
   for (auto const & [vertexAddr, degree] : vertexes)
   {
     ScAddr const & vertexDegreeAddr = m_context.GenerateLink(ScType::ConstNodeLink);
-    m_context.SetLinkContent(vertexDegreeAddr, degree);
+    try
+    {
+      m_context.SetLinkContent(vertexDegreeAddr, std::to_string(degree));
+    }
+    catch (std::exception & e)
+    {
+      m_logger.Error(e.what());
+    }
 
     ScAddr const & arcCommonAddr = m_context.GenerateConnector(ScType::ConstCommonArc, vertexAddr, vertexDegreeAddr);
     ScAddr const & nrelVertexDegreeAddr =
         m_context.GenerateConnector(ScType::ConstPermPosArc, StreetCleaningKeynodes::nrel_vertex_degree, arcCommonAddr);
 
-    resultStructure << vertexDegreeAddr << arcCommonAddr << nrelVertexDegreeAddr << vertexAddr;
+    ScIterator3Ptr edgeIt = m_context.CreateIterator3(networkAddr, ScType::ConstPermPosArc, vertexAddr);
+    if (edgeIt->Next())
+      resultStructure << edgeIt->Get(1) << edgeIt->Get(2);
+
+    resultStructure << vertexDegreeAddr << arcCommonAddr << nrelVertexDegreeAddr;
   }
   return resultStructure;
 }

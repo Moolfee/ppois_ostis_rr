@@ -11,6 +11,7 @@
 #include <stack>
 #include <map>
 #include <algorithm>
+#include <string>
 
 #define EPS 1e-9
 #define INF 1e9
@@ -235,9 +236,9 @@ ScStructure FindRouteAgent::CreateRouteStructure(ScAddr const & networkAddr, ScA
   ScAddr const & routeLength = m_context.GenerateLink(ScType::ConstNodeLink);
   m_context.SetLinkContent(routeLength, length);
 
-  ScAddr const & arcCommonAddr = m_context.GenerateConnector(ScType::ConstCommonArc, routeTuple, routeLength);
+  ScAddr const & arcCommonAddr2 = m_context.GenerateConnector(ScType::ConstCommonArc, routeTuple, routeLength);
   ScAddr const & nrelRouteLength =
-      m_context.GenerateConnector(ScType::ConstPermPosArc, StreetCleaningKeynodes::nrel_route_length, arcCommonAddr);
+      m_context.GenerateConnector(ScType::ConstPermPosArc, StreetCleaningKeynodes::nrel_route_length, arcCommonAddr2);
 
   result << routeLength << arcCommonAddr << nrelRouteLength;
   return result;
@@ -442,10 +443,13 @@ double FindRouteAgent::GetStreetLength(ScAddr const & streetAddr)
   if (it->Next())
   {
     ScAddr linkAddr = it->Get(2);
-    double length = 0.0;
+    std::string lengthStr;
 
-    if (m_context.GetLinkContent(linkAddr, length))
+    if (m_context.GetLinkContent(linkAddr, lengthStr))
+    {
+      double length = std::stod(lengthStr);
       return length;
+    }
 
     // int lengthInt = 0;
     // if (m_context.GetLinkContent(linkAddr, lengthInt))

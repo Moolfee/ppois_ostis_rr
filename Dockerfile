@@ -30,8 +30,7 @@ RUN conan remote add ostis-ai https://conan.ostis.net/artifactory/api/conan/osti
     conan install . --build=missing
 
 # Install sc-machine binaries
-RUN ./scripts/install_cxx_problem_solver.sh
-
+RUN  ./scripts/install_cxx_problem_solver.sh
 FROM devdeps AS devcontainer
 RUN apt install -y --no-install-recommends cppcheck valgrind gdb bash-completion ninja-build curl
 ENTRYPOINT ["/bin/bash"]

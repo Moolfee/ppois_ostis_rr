@@ -12,10 +12,8 @@ street_lenina
         <- sc_link;;
     *);
 => nrel_connects:
-    {
-        square_mira;
-        lenina_sovetskaya_intersection
-    };;
+    square_mira;
+    lenina_sovetskaya_intersection;;
 
 
 street_sovetskaya
@@ -32,10 +30,8 @@ street_sovetskaya
         <- sc_link;;
     *);
 => nrel_connects:
-    {
-        lenina_sovetskaya_intersection;
-        sovetskaya_pushkina_intersection
-    };;
+    lenina_sovetskaya_intersection;
+    sovetskaya_pushkina_intersection;;
 
 
 street_pushkina
@@ -52,10 +48,8 @@ street_pushkina
         <- sc_link;;
     *);
 => nrel_connects:
-    {
         sovetskaya_pushkina_intersection;
-        square_pobedy
-    };;
+        square_pobedy;;
 
 
 avenue_gagarina
@@ -72,10 +66,8 @@ avenue_gagarina
         <- sc_link;;
     *);
 => nrel_connects:
-    {
         square_mira;
-        square_pobedy
-    };;
+        square_pobedy;;
 
 
 street_mira
@@ -92,10 +84,8 @@ street_mira
         <- sc_link;;
     *);
 => nrel_connects:
-    {
-        lenina_mira_intersection;
-        gagarin_mira_intersection
-    };;
+    lenina_mira_intersection;
+    gagarin_mira_intersection;;
 
 
 street_parkovaya
@@ -112,7 +102,5 @@ street_parkovaya
         <- sc_link;;
     *);
 => nrel_connects:
-    {
-        pushkina_parkovaya_intersection;
-        parkovaya_gagarin_intersection
-    };;
+    pushkina_parkovaya_intersection;
+    parkovaya_gagarin_intersection;;

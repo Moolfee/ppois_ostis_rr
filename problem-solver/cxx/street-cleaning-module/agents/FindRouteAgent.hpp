@@ -3,7 +3,7 @@
 #include <sc-memory/sc_agent.hpp>
 
 #include "utils/Edge.hpp"
-#include <PathResutt.hpp>
+#include "utils/PathResult.hpp"
 
 class FindRouteAgent : public ScActionInitiatedAgent
 {
