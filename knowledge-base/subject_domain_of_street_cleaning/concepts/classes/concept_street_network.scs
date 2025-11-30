@@ -1,7 +1,0 @@
-concept_street_network
-<- sc_node_class;
-=> nrel_main_idtf:
-    [улично-дорожная сеть]
-    (*
-        <- lang_ru;;
-    *);;

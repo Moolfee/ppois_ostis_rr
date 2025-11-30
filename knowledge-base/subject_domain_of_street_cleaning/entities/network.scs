@@ -1,9 +1,0 @@
-example_network
-<- concept_street_network;
-=> nrel_main_idtf:
-    [пример сети]
-    (*
-        <- lang_ru;;
-    *);
-->rrel_start:
-    square_mira;;
