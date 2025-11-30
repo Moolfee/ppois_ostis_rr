@@ -5,7 +5,7 @@
 #include <sc-memory/sc_link.hpp>
 
 #include "Graph.hpp"
-#include "../keynodes/transport_accessibility_keynodes.hpp"
+#include "keynodes/transport_accessibility_keynodes.hpp"
 
 // Результат построения графа из SC-памяти
 struct GraphFromScResult

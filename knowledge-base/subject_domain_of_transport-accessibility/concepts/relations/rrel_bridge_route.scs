@@ -1,0 +1,18 @@
+rrel_bridge_route
+<- sc_node_role_relation;
+
+=> nrel_main_idtf:
+    [мостовой маршрут*]
+    (*
+        <- lang_ru;;
+    *);
+    [bridge route*]
+    (*
+        <- lang_en;;
+    *);
+
+=> nrel_note:
+    [Используется для обозначения маршрута, являющегося мостовым соединением (bridge edge).]
+    (*
+        <- lang_ru;;
+    *);;

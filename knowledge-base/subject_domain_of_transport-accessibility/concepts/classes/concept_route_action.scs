@@ -1,0 +1,11 @@
+concept_route_action
+<- sc_node_class;
+=> nrel_main_idtf:
+    [действие над маршрутами общественного транспорта]
+    (*
+        <- lang_ru;;
+    *);
+    [route-related public transport action]
+    (*
+        <- lang_en;;
+    *);;    

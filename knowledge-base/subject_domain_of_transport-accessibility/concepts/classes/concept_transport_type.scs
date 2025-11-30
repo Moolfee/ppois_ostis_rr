@@ -1,0 +1,11 @@
+concept_transport_type
+<- sc_node_class;
+=> nrel_main_idtf:
+[вид общественного транспорта]
+(*
+    <- lang_ru;;
+*);
+[public transport type]
+(*
+    <- lang_en;;
+*);;

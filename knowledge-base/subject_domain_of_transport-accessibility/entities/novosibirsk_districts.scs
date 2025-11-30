@@ -1,60 +1,118 @@
-lenina_sovetskaya_intersection
-<- concept_intersection;
-<- example_network;
+
+centralny
+<- concept_district;
 => nrel_main_idtf:
-    [перекресток ул. Ленина и ул. Советская]
+    [Центральный район]
     (*
         <- lang_ru;;
+    *);
+    [Centralny district]
+    (*
+        <- lang_en;;
     *);;
 
-
-sovetskaya_pushkina_intersection
-<- concept_intersection;
-<- example_network;
+kirovskiy
+<- concept_district;
 => nrel_main_idtf:
-    [перекресток ул. Советская и ул. Пушкина]
+    [Кировский район]
     (*
         <- lang_ru;;
+    *);
+    [Kirovskiy district]
+    (*
+        <- lang_en;;
     *);;
 
-
-lenina_mira_intersection
-<- concept_intersection;
-<- example_network;
+leninskiy
+<- concept_district;
 => nrel_main_idtf:
-    [перекресток ул. Ленина и ул. Мира]
+    [Ленинский район]
     (*
         <- lang_ru;;
+    *);
+    [Leninskiy district]
+    (*
+        <- lang_en;;
     *);;
 
-
-gagarin_mira_intersection
-<- concept_intersection;
-<- example_network;
+sovetskiy
+<- concept_district;
 => nrel_main_idtf:
-    [перекресток пр. Гагарина и ул. Мира]
+    [Советский район]
     (*
         <- lang_ru;;
+    *);
+    [Sovetskiy district]
+    (*
+        <- lang_en;;
     *);;
 
-
-pushkina_parkovaya_intersection
-<- concept_intersection;
-<- example_network;
+oktyabrskiy
+<- concept_district;
 => nrel_main_idtf:
-    [перекресток ул. Пушкина и ул. Парковая]
+    [Октябрьский район]
     (*
         <- lang_ru;;
+    *);
+    [Oktyabrskiy district]
+    (*
+        <- lang_en;;
     *);;
 
-
-parkovaya_gagarin_intersection
-<- concept_intersection;
-<- example_network;
+zaeltsovskiy
+<- concept_district;
 => nrel_main_idtf:
-    [перекресток ул. Парковая и пр. Гагарина]
+    [Заельцовский район]
     (*
         <- lang_ru;;
+    *);
+    [Zaeltsovskiy district]
+    (*
+        <- lang_en;;
     *);;
 
+dzerzhinskiy
+<- concept_district;
+=> nrel_main_idtf:
+    [Дзержинский район]
+    (*
+        <- lang_ru;;
+    *);
+    [Dzerzhinskiy district]
+    (*
+        <- lang_en;;
+    *);;
 
+zheleznodorozhnyy
+<- concept_district;
+=> nrel_main_idtf:
+    [Железнодорожный район]
+    (*
+        <- lang_ru;;
+    *);
+    [Zheleznodorozhnyy district]
+    (*
+        <- lang_en;;
+    *);;
+
+novosibirsk_districts
+=> nrel_main_idtf:
+    [районы города Новосибирска]
+    (*
+        <- lang_ru;;
+    *);
+    [districts of Novosibirsk]
+    (*
+        <- lang_en;;
+    *);;
+
+novosibirsk_districts = [*
+    centralny;
+    kirovskiy;
+    leninskiy;
+    sovetskiy;
+    oktyabrskiy;
+    zaeltsovskiy;
+    dzerzhinskiy;
+    zheleznodorozhnyy;
+*];;

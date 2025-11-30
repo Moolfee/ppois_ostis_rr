@@ -1,7 +1,13 @@
-concept_network_with_euler_cycle
-<- sc_node_class;
+concept_city_set_of_administrative_units
+<- concept_class;
 => nrel_main_idtf:
-    [граф с циклом Эйлера]
+    [монжество городских административных единиц]
     (*
         <- lang_ru;;
-    *);;
+    *);
+    [city set of administrative units]
+    (*
+        <- lang_en;;
+    *);
+=> nrel_inclusion:
+    concept_district;;

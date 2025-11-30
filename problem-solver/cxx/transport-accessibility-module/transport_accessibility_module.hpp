@@ -2,6 +2,6 @@
 
 #include <sc-memory/sc_module.hpp>
 
-class StreetCleaningModule : public ScModule
+class TransportAccessibilityModule : public ScModule
 {
 };

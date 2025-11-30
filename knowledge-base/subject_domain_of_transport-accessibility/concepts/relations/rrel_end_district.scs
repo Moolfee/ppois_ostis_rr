@@ -1,0 +1,12 @@
+rrel_end_district
+<- sc_node_role_relation;
+
+=> nrel_main_idtf:
+    [конечный район*]
+    (*
+        <- lang_ru;;
+    *);
+    [end district*]
+    (*
+        <- lang_en;;
+    *);;

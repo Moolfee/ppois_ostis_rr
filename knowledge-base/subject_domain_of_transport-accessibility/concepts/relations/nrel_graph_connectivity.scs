@@ -1,11 +1,17 @@
-nrel_street_length
+nrel_graph_connectivity
 <- sc_node_non_role_relation;
+
 => nrel_main_idtf:
-    [длина улицы*]
+    [связность транспортной сети*]
     (*
         <- lang_ru;;
     *);
+    [connectivity of transport network*]
+    (*
+        <- lang_en;;
+    *);
+
 => nrel_first_domain:
-    concept_street;
+    concept_transport_infrastructure_element;
 => nrel_second_domain:
-    sc_link;;
+    concept_transport_accessibility_indicator;;

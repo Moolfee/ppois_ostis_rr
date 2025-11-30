@@ -1,0 +1,29 @@
+novosibirsk_transport_graph
+<- concept_transport_infrastructure_element;
+=> nrel_main_idtf:
+    [граф транспортных связей районов Новосибирска]
+    (*
+        <- lang_ru;;
+    *);
+    [graph of transport connections of Novosibirsk districts]
+    (*
+        <- lang_en;;
+    *);;
+
+novosibirsk_transport_graph = [*
+    centralny;
+    kirovskiy;
+    leninskiy;
+    sovetskiy;
+    oktyabrskiy;
+    zaeltsovskiy;
+    dzerzhinskiy;
+    zheleznodorozhnyy;
+
+    route_bus_5;    
+    route_bus_12;   
+    route_bus_7;    
+    route_bus_15;  
+    route_bus_23;   
+    route_bus_31;  
+*];;

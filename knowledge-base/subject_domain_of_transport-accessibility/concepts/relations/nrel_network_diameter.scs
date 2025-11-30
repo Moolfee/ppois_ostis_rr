@@ -1,11 +1,17 @@
-rrel_finish
-<- sc_node_role_relation;
+nrel_network_diameter
+<- sc_node_non_role_relation;
+
 => nrel_main_idtf:
-    [конец маршрута']
+    [диаметр транспортной сети*]
     (*
         <- lang_ru;;
     *);
+    [diameter of transport network*]
+    (*
+        <- lang_en;;
+    *);
+
 => nrel_first_domain:
-    concept_street_network;
+    concept_transport_infrastructure_element;
 => nrel_second_domain:
-    concept_intersection;;
+    concept_integer;;

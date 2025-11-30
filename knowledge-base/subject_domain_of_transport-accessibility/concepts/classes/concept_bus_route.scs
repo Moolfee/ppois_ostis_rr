@@ -1,7 +1,13 @@
-concept_street
+concept_bus_route
 <- sc_node_class;
 => nrel_main_idtf:
-    [улица]
-    (*
-        <- lang_ru;;
-    *);;
+[автобусный маршрут]
+(*
+    <- lang_ru;;
+*);
+[bus route]
+(*
+    <- lang_en;;
+*);
+<= nrel_inclusion:
+    concept_public_transport_route;;

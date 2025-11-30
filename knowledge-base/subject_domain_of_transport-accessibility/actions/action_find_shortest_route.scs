@@ -1,0 +1,14 @@
+action_find_shortest_route
+<- sc_node_class;
+<- concept_class;
+=> nrel_main_idtf:
+    [действие поиска кратчайшего маршрута между районами]
+    (*
+        <- lang_ru;;
+    *);
+    [action to find shortest route between districts]
+    (*
+        <- lang_en;;
+    *);
+<= nrel_inclusion:
+    concept_route_action;;
