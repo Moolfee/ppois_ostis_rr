@@ -12,7 +12,7 @@ using AgentTest = ScMemoryTest;
 // Оба маршрута в такой цепочке являются мостами.
 static ScAddr BuildPathGraphWithBridges(ScMemoryContext & ctx)
 {
-  ScAddr const graphAddr = ctx.GenerateNode(ScType::ConstNodeStruct);
+  ScAddr const graphAddr = ctx.GenerateNode(ScType::ConstNodeStructure);
 
   // Районы
   ScAddr const d1 = ctx.GenerateNode(ScType::ConstNode);
@@ -46,7 +46,7 @@ static ScAddr BuildPathGraphWithBridges(ScMemoryContext & ctx)
       route1);
   ctx.GenerateConnector(ScType::ConstPermPosArc, graphAddr, route1);
 
-  ScAddr const set12 = ctx.GenerateNode(ScType::ConstNodeStruct);
+  ScAddr const set12 = ctx.GenerateNode(ScType::ConstNodeStructure);
   ctx.GenerateConnector(ScType::ConstPermPosArc, set12, d1);
   ctx.GenerateConnector(ScType::ConstPermPosArc, set12, d2);
 
@@ -70,7 +70,7 @@ static ScAddr BuildPathGraphWithBridges(ScMemoryContext & ctx)
       route2);
   ctx.GenerateConnector(ScType::ConstPermPosArc, graphAddr, route2);
 
-  ScAddr const set23 = ctx.GenerateNode(ScType::ConstNodeStruct);
+  ScAddr const set23 = ctx.GenerateNode(ScType::ConstNodeStructure);
   ctx.GenerateConnector(ScType::ConstPermPosArc, set23, d2);
   ctx.GenerateConnector(ScType::ConstPermPosArc, set23, d3);
 

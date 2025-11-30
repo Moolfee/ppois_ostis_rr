@@ -53,31 +53,31 @@ ScResult CalculateNetworkDiameterAgent::DoProgram(ScAction & action)
   ScStructure result = m_context.GenerateStructure();
 
   // Узел-структура результата (контейнер, куда будем вешать rrel_diameter_value)
-  ScAddr resultNode = m_context.CreateNode(ScType::ConstNodeStruct);
+  ScAddr resultNode = m_context.GenerateNode(ScType::ConstNodeStructure);
   result << resultNode;
 
   // 5.1. Link с численным значением диаметра
-  ScAddr diameterLink = m_context.CreateLink();
+  ScAddr diameterLink = m_context.GenerateLink();
   m_context.SetLinkContent(diameterLink, diameter);
 
   // graphAddr => nrel_network_diameter: diameterLink;;
-  ScAddr arcCommon = m_context.CreateConnector(
+  ScAddr arcCommon = m_context.GenerateConnector(
       ScType::ConstCommonArc,
       graphAddr,
       diameterLink);
 
-  ScAddr arcRel = m_context.CreateConnector(
+  ScAddr arcRel = m_context.GenerateConnector(
       ScType::ConstPermPosArc,
       TransportAccessibilityKeynodes::nrel_network_diameter,
       arcCommon);
 
   // Включаем link в структуру результата с ролевым отношением rrel_diameter_value
-  ScAddr arcToResult = m_context.CreateConnector(
+  ScAddr arcToResult = m_context.GenerateConnector(
       ScType::ConstPermPosArc,
       resultNode,
       diameterLink);
 
-  ScAddr arcRole = m_context.CreateConnector(
+  ScAddr arcRole = m_context.GenerateConnector(
       ScType::ConstPermPosArc,
       TransportAccessibilityKeynodes::rrel_diameter_value,
       arcToResult);

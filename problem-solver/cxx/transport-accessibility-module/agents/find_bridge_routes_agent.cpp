@@ -129,7 +129,7 @@ ScResult FindBridgeRoutesAgent::DoProgram(ScAction & action)
   // 6. Создаём структуру результата
   ScStructure result = m_context.GenerateStructure();
 
-  ScAddr bridgeRoutesSet = m_context.CreateNode(ScType::ConstNodeStruct);
+  ScAddr bridgeRoutesSet = m_context.GenerateNode(ScType::ConstNodeStructure);
   result << bridgeRoutesSet;
 
   // 7. Для каждого мостового ребра — помечаем соответствующие маршруты

@@ -53,7 +53,7 @@ ScResult FindShortestRouteAgent::DoProgram(ScAction & action)
   ScStructure result = m_context.GenerateStructure();
 
   // Узел–структура для всех кратчайших расстояний
-  ScAddr shortestTableNode = m_context.CreateNode(ScType::ConstNodeStruct);
+  ScAddr shortestTableNode = m_context.GenerateNode(ScType::ConstNodeStructure);
   result << shortestTableNode;
 
   // Для каждой пары (i,j), i < j, создаём описатель кратчайшего пути:
@@ -73,47 +73,47 @@ ScResult FindShortestRouteAgent::DoProgram(ScAction & action)
         continue;
       }
 
-      ScAddr pairNode = m_context.CreateNode(ScType::ConstNodeStruct);
+      ScAddr pairNode = m_context.GenerateNode(ScType::ConstNodeStructure);
       result << pairNode;
 
       // start_district
-      ScAddr arcStart = m_context.CreateConnector(
+      ScAddr arcStart = m_context.GenerateConnector(
           ScType::ConstCommonArc,
           pairNode,
           districts[i]);
 
-      ScAddr arcStartRole = m_context.CreateConnector(
+      ScAddr arcStartRole = m_context.GenerateConnector(
           ScType::ConstPermPosArc,
           TransportAccessibilityKeynodes::rrel_start_district,
           arcStart);
 
       // end_district
-      ScAddr arcEnd = m_context.CreateConnector(
+      ScAddr arcEnd = m_context.GenerateConnector(
           ScType::ConstCommonArc,
           pairNode,
           districts[j]);
 
-      ScAddr arcEndRole = m_context.CreateConnector(
+      ScAddr arcEndRole = m_context.GenerateConnector(
           ScType::ConstPermPosArc,
           TransportAccessibilityKeynodes::rrel_end_district,
           arcEnd);
 
       // link с расстоянием
-      ScAddr distanceLink = m_context.CreateLink();
+      ScAddr distanceLink = m_context.GenerateLink();
       m_context.SetLinkContent(distanceLink, dist[i][j]);
 
-      ScAddr arcCommonDist = m_context.CreateConnector(
+      ScAddr arcCommonDist = m_context.GenerateConnector(
           ScType::ConstCommonArc,
           pairNode,
           distanceLink);
 
-      ScAddr arcRelDist = m_context.CreateConnector(
+      ScAddr arcRelDist = m_context.GenerateConnector(
           ScType::ConstPermPosArc,
           TransportAccessibilityKeynodes::nrel_shortest_distance,
           arcCommonDist);
 
       // включаем pairNode в общую структуру
-      ScAddr arcToTable = m_context.CreateConnector(
+      ScAddr arcToTable = m_context.GenerateConnector(
           ScType::ConstPermPosArc,
           shortestTableNode,
           pairNode);

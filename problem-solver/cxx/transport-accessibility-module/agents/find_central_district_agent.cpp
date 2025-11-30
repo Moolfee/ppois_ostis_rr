@@ -64,19 +64,19 @@ ScResult FindCentralDistrictAgent::DoProgram(ScAction & action)
   ScStructure result = m_context.GenerateStructure();
 
   // Узел-структура результата (можно использовать как «контейнер»)
-  ScAddr resultNode = m_context.CreateNode(ScType::ConstNodeStruct);
+  ScAddr resultNode = m_context.GenerateNode(ScType::ConstNodeStructure);
   result << resultNode;
 
   // 5.1. Факт: для данного графа центральный район = centralDistrict
   //
   // graphAddr => nrel_is_it_central_district: centralDistrict;;
   //
-  ScAddr arcCommon = m_context.CreateConnector(
+  ScAddr arcCommon = m_context.GenerateConnector(
       ScType::ConstCommonArc,
       graphAddr,
       centralDistrict);
 
-  ScAddr arcRel = m_context.CreateConnector(
+  ScAddr arcRel = m_context.GenerateConnector(
       ScType::ConstPermPosArc,
       TransportAccessibilityKeynodes::nrel_is_it_central_district,
       arcCommon);
@@ -84,7 +84,7 @@ ScResult FindCentralDistrictAgent::DoProgram(ScAction & action)
   result << graphAddr << centralDistrict << arcCommon << arcRel;
 
   // 5.2. Можно включить центральный район внутрь resultNode как элемент
-  ScAddr arcToSet = m_context.CreateConnector(
+  ScAddr arcToSet = m_context.GenerateConnector(
       ScType::ConstPermPosArc,
       resultNode,
       centralDistrict);

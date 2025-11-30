@@ -76,20 +76,20 @@ ScResult AnalyzeTransportAccessibilityAgent::DoProgram(ScAction & action)
   // 8. Формируем общую SC-структуру результата
   ScStructure result = m_context.GenerateStructure();
 
-  ScAddr analysisNode = m_context.CreateNode(ScType::ConstNodeStruct);
+  ScAddr analysisNode = m_context.GenerateNode(ScType::ConstNodeStructure);
   result << analysisNode << graphAddr;
 
   // 8.1. Связность
   {
-    ScAddr connectivityLink = m_context.CreateLink();
+    ScAddr connectivityLink = m_context.GenerateLink();
     m_context.SetLinkContent(connectivityLink, isConnected ? 1 : 0);
 
-    ScAddr arcCommon = m_context.CreateConnector(
+    ScAddr arcCommon = m_context.GenerateConnector(
         ScType::ConstCommonArc,
         graphAddr,
         connectivityLink);
 
-    ScAddr arcRel = m_context.CreateConnector(
+    ScAddr arcRel = m_context.GenerateConnector(
         ScType::ConstPermPosArc,
         TransportAccessibilityKeynodes::nrel_graph_connectivity,
         arcCommon);
@@ -100,12 +100,12 @@ ScResult AnalyzeTransportAccessibilityAgent::DoProgram(ScAction & action)
   // 8.2. Центральный район (если удалось определить)
   if (centralDistrict.IsValid())
   {
-    ScAddr arcCommon = m_context.CreateConnector(
+    ScAddr arcCommon = m_context.GenerateConnector(
         ScType::ConstCommonArc,
         graphAddr,
         centralDistrict);
 
-    ScAddr arcRel = m_context.CreateConnector(
+    ScAddr arcRel = m_context.GenerateConnector(
         ScType::ConstPermPosArc,
         TransportAccessibilityKeynodes::nrel_is_it_central_district,
         arcCommon);
@@ -115,26 +115,26 @@ ScResult AnalyzeTransportAccessibilityAgent::DoProgram(ScAction & action)
 
   // 8.3. Диаметр
   {
-    ScAddr diameterLink = m_context.CreateLink();
+    ScAddr diameterLink = m_context.GenerateLink();
     m_context.SetLinkContent(diameterLink, diameter);
 
-    ScAddr arcCommon = m_context.CreateConnector(
+    ScAddr arcCommon = m_context.GenerateConnector(
         ScType::ConstCommonArc,
         graphAddr,
         diameterLink);
 
-    ScAddr arcRel = m_context.CreateConnector(
+    ScAddr arcRel = m_context.GenerateConnector(
         ScType::ConstPermPosArc,
         TransportAccessibilityKeynodes::nrel_network_diameter,
         arcCommon);
 
     // также привяжем к analysisNode через rrel_diameter_value
-    ScAddr arcToAnalysis = m_context.CreateConnector(
+    ScAddr arcToAnalysis = m_context.GenerateConnector(
         ScType::ConstPermPosArc,
         analysisNode,
         diameterLink);
 
-    ScAddr arcRole = m_context.CreateConnector(
+    ScAddr arcRole = m_context.GenerateConnector(
         ScType::ConstPermPosArc,
         TransportAccessibilityKeynodes::rrel_diameter_value,
         arcToAnalysis);
@@ -144,15 +144,15 @@ ScResult AnalyzeTransportAccessibilityAgent::DoProgram(ScAction & action)
 
   // 8.4. Количество мостов (сохраним в link)
   {
-    ScAddr bridgesCountLink = m_context.CreateLink();
+    ScAddr bridgesCountLink = m_context.GenerateLink();
     m_context.SetLinkContent(bridgesCountLink, bridgesCount);
 
-    ScAddr arcCommon = m_context.CreateConnector(
+    ScAddr arcCommon = m_context.GenerateConnector(
         ScType::ConstCommonArc,
         graphAddr,
         bridgesCountLink);
 
-    ScAddr arcRel = m_context.CreateConnector(
+    ScAddr arcRel = m_context.GenerateConnector(
         ScType::ConstPermPosArc,
         TransportAccessibilityKeynodes::nrel_bridge_routes_count,
         arcCommon);  // это отношение тебе нужно завести в KB

@@ -11,7 +11,7 @@ using AgentTest = ScMemoryTest;
 static ScAddr BuildConnectedTestGraph(ScMemoryContext & ctx)
 {
   // узел графа
-  ScAddr const graphAddr = ctx.GenerateNode(ScType::ConstNodeStruct);
+  ScAddr const graphAddr = ctx.GenerateNode(ScType::ConstNodeStructure);
 
   // два района
   ScAddr const district1 = ctx.GenerateNode(ScType::ConstNode);
@@ -44,7 +44,7 @@ static ScAddr BuildConnectedTestGraph(ScMemoryContext & ctx)
   ctx.GenerateConnector(ScType::ConstPermPosArc, graphAddr, route);
 
   // множество районов, которые соединяет маршрут
-  ScAddr const districtsSet = ctx.GenerateNode(ScType::ConstNodeStruct);
+  ScAddr const districtsSet = ctx.GenerateNode(ScType::ConstNodeStructure);
   ctx.GenerateConnector(ScType::ConstPermPosArc, districtsSet, district1);
   ctx.GenerateConnector(ScType::ConstPermPosArc, districtsSet, district2);
 

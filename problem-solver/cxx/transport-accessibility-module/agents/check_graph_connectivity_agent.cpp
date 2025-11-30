@@ -44,14 +44,20 @@ ScResult CheckGraphConnectivityAgent::DoProgram(ScAction & action)
       ScAddr elem = it->Get(2);
 
       // район?
-      if (m_context.CheckConnector(TransportAccessibilityKeynodes::concept_district, elem))
+      if (m_context.CheckConnector(
+              TransportAccessibilityKeynodes::concept_district,
+              elem,
+              ScType::ConstPermPosArc))
       {
         districts.push_back(elem);
         continue;
       }
 
       // маршрут?
-      if (m_context.CheckConnector(TransportAccessibilityKeynodes::concept_public_transport_route, elem))
+      if (m_context.CheckConnector(
+              TransportAccessibilityKeynodes::concept_public_transport_route,
+              elem,
+              ScType::ConstPermPosArc))
       {
         routes.push_back(elem);
         continue;
@@ -156,12 +162,12 @@ ScResult CheckGraphConnectivityAgent::DoProgram(ScAction & action)
 
   ScStructure result = m_context.GenerateStructure();
 
-  ScAddr resultNode = m_context.CreateNode(ScType::ConstNodeStruct);
+  ScAddr resultNode = m_context.GenerateNode(ScType::ConstNodeStructure);
   result << resultNode;
 
   {
-    ScAddr boolNode = m_context.CreateNode(ScType::ConstNode);
-    m_context.SetLinkContent(m_context.CreateLink(), isConnected ? "true" : "false");
+    ScAddr boolNode = m_context.GenerateNode(ScType::ConstNode);
+    m_context.SetLinkContent(m_context.GenerateLink(), isConnected ? "true" : "false");
 
     ScAddr arcCommon = m_context.GenerateConnector(
         ScType::ConstCommonArc,
@@ -176,7 +182,7 @@ ScResult CheckGraphConnectivityAgent::DoProgram(ScAction & action)
     result << boolNode << arcCommon;
   }
 
-  ScAddr unreachableSet = m_context.CreateNode(ScType::ConstNodeStruct);
+  ScAddr unreachableSet = m_context.GenerateNode(ScType::ConstNodeStructure);
   result << unreachableSet;
 
   for (ScAddr const & d : unreachable)
