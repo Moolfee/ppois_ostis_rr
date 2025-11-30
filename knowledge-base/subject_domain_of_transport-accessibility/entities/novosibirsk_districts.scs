@@ -106,13 +106,13 @@ novosibirsk_districts
         <- lang_en;;
     *);;
 
-novosibirsk_districts = [*
-    centralny;
-    kirovskiy;
-    leninskiy;
-    sovetskiy;
-    oktyabrskiy;
-    zaeltsovskiy;
-    dzerzhinskiy;
-    zheleznodorozhnyy;
-*];;
+novosibirsk_districts <- sc_node_structure;;
+
+novosibirsk_districts -> centralny;;
+novosibirsk_districts -> kirovskiy;;
+novosibirsk_districts -> leninskiy;;
+novosibirsk_districts -> sovetskiy;;
+novosibirsk_districts -> oktyabrskiy;;
+novosibirsk_districts -> zaeltsovskiy;;
+novosibirsk_districts -> dzerzhinskiy;;
+novosibirsk_districts -> zheleznodorozhnyy;;

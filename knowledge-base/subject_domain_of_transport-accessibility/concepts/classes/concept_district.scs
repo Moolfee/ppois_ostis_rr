@@ -9,7 +9,7 @@ concept_district
 (*
     <- lang_en;;
 *);;
-<= nrel_inclusion:
-    concept_city_set_of_administrative_units;
-<= nrel_first_domain:
+concept_district <= nrel_inclusion:
+    concept_city_set_of_administrative_units;;
+concept_district <= nrel_first_domain:
     concept_public_transport_route;;
