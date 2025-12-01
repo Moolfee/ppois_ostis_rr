@@ -162,37 +162,38 @@ ScResult CheckGraphConnectivityAgent::DoProgram(ScAction & action)
 
   ScStructure result = m_context.GenerateStructure();
 
-  ScAddr resultNode = m_context.GenerateNode(ScType::ConstNodeStructure);
-  result << resultNode;
+  // Фиксируем факт связности: graph --nrel_graph_connectivity--> link(true/false)
+  ScAddr connectivityLink = m_context.GenerateLink();
+  m_context.SetLinkContent(connectivityLink, isConnected ? "true" : "false");
 
+  ScAddr connectivityArc = m_context.GenerateConnector(
+      ScType::ConstCommonArc,
+      graphAddr,
+      connectivityLink);
+
+  ScAddr connectivityRel = m_context.GenerateConnector(
+      ScType::ConstPermPosArc,
+      TransportAccessibilityKeynodes::nrel_graph_connectivity,
+      connectivityArc);
+
+  result << connectivityLink << connectivityArc << connectivityRel
+         << TransportAccessibilityKeynodes::nrel_graph_connectivity;
+
+  // Если есть недостижимые районы — возвращаем отдельное множество
+  if (!isConnected)
   {
-    ScAddr boolNode = m_context.GenerateNode(ScType::ConstNode);
-    m_context.SetLinkContent(m_context.GenerateLink(), isConnected ? "true" : "false");
+    ScAddr unreachableSet = m_context.GenerateNode(ScType::ConstNodeStructure);
+    result << unreachableSet;
 
-    ScAddr arcCommon = m_context.GenerateConnector(
-        ScType::ConstCommonArc,
-        graphAddr,
-        boolNode);
+    for (ScAddr const & d : unreachable)
+    {
+      ScAddr arc = m_context.GenerateConnector(
+          ScType::ConstPermPosArc,
+          unreachableSet,
+          d);
 
-    m_context.GenerateConnector(
-        ScType::ConstPermPosArc,
-        TransportAccessibilityKeynodes::nrel_graph_connectivity,
-        arcCommon);
-
-    result << boolNode << arcCommon;
-  }
-
-  ScAddr unreachableSet = m_context.GenerateNode(ScType::ConstNodeStructure);
-  result << unreachableSet;
-
-  for (ScAddr const & d : unreachable)
-  {
-    ScAddr arc = m_context.GenerateConnector(
-        ScType::ConstPermPosArc,
-        unreachableSet,
-        d);
-
-    result << arc << d;
+      result << arc << d;
+    }
   }
 
   action.SetResult(result);

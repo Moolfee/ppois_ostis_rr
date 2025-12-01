@@ -1,4 +1,4 @@
-novosibirsk_transport_graph
+novosibirsk_transport_disconnected_graph
 <- concept_transport_infrastructure_element;
 => nrel_main_idtf:
     [граф несвязных транспортных связей районов Новосибирска]
@@ -12,18 +12,18 @@ novosibirsk_transport_graph
 
 novosibirsk_transport_graph <- sc_node_structure;;
 
-novosibirsk_transport_graph -> centralny;;
-novosibirsk_transport_graph -> kirovskiy;;
-novosibirsk_transport_graph -> leninskiy;;
-novosibirsk_transport_graph -> sovetskiy;;
-novosibirsk_transport_graph -> oktyabrskiy;;
-novosibirsk_transport_graph -> zaeltsovskiy;;
-novosibirsk_transport_graph -> dzerzhinskiy;;
-novosibirsk_transport_graph -> zheleznodorozhnyy;;
+novosibirsk_transport_disconnected_graph -> centralny;;
+novosibirsk_transport_disconnected_graph -> kirovskiy;;
+novosibirsk_transport_disconnected_graph -> leninskiy;;
+novosibirsk_transport_disconnected_graph -> sovetskiy;;
+novosibirsk_transport_disconnected_graph -> oktyabrskiy;;
+novosibirsk_transport_disconnected_graph -> zaeltsovskiy;;
+novosibirsk_transport_disconnected_graph -> dzerzhinskiy;;
+novosibirsk_transport_disconnected_graph -> zheleznodorozhnyy;;
 
-novosibirsk_transport_graph -> route_bus_5;;
-novosibirsk_transport_graph -> route_metro_line1;;
-novosibirsk_transport_graph -> route_bus_12;;
-novosibirsk_transport_graph -> route_bus_7;;
-novosibirsk_transport_graph -> route_bus_23;;
-novosibirsk_transport_graph -> route_bus_31;;
+novosibirsk_transport_disconnected_graph -> route_bus_5;;
+novosibirsk_transport_disconnected_graph -> route_metro_line1;;
+novosibirsk_transport_disconnected_graph -> route_bus_12;;
+novosibirsk_transport_disconnected_graph -> route_bus_7;;
+novosibirsk_transport_disconnected_graph-> route_bus_23;;
+novosibirsk_transport_disconnected_graph -> route_bus_31;;
