@@ -1,0 +1,18 @@
+rrel_diameter_value
+<- sc_node_role_relation;
+
+=> nrel_main_idtf:
+    [значение диаметра сети*]
+    (*
+        <- lang_ru;;
+    *);
+    [network diameter value*]
+    (*
+        <- lang_en;;
+    *);
+
+=> nrel_note:
+    [Используется для указания численного значения диаметра транспортной сети.]
+    (*
+        <- lang_ru;;
+    *);;

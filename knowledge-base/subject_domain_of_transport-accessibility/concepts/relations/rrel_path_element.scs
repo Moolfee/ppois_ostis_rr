@@ -1,0 +1,18 @@
+rrel_path_element
+<- sc_node_role_relation;
+
+=> nrel_main_idtf:
+    [элемент пути*]
+    (*
+        <- lang_ru;;
+    *);
+    [path element*]
+    (*
+        <- lang_en;;
+    *);
+
+=> nrel_note:
+    [Используется для обозначения маршрутов, входящих в найденный путь.]
+    (*
+        <- lang_ru;;
+    *);;

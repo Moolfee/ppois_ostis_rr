@@ -1,0 +1,14 @@
+action_find_bridge_routes
+<- sc_node_class;
+<- concept_class;
+=> nrel_main_idtf:
+    [действие поиска мостовых маршрутов]
+    (*
+        <- lang_ru;;
+    *);
+    [action to find bridge routes]
+    (*
+        <- lang_en;;
+    *);
+<= nrel_inclusion:
+    concept_route_action;;

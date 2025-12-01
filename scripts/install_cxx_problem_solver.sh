@@ -54,7 +54,6 @@ cleanup() {
     local destination_dir="$2"
     echo "Cleaning up..."
     rm -f "${archive}"
-    rm -rf "${destination_dir}/include"
 }
 
 SC_MACHINE_ARCHIVE=$(get_archive_name "sc-machine" "${SC_MACHINE_VERSION}")

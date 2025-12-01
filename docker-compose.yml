@@ -21,7 +21,7 @@ services:
     restart: unless-stopped
     volumes:
       # TODO(NikitaZotov): Don't load all project sources to volume to build knowledge-base.
-      - ./:/knowledge-base:Z
+      - ./:/knowledge-base
       - kb-binary:/kb.bin
     networks:
       - sc-machine

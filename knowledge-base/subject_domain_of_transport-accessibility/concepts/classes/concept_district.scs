@@ -1,0 +1,15 @@
+concept_district
+<- sc_node_class;
+=> nrel_main_idtf:
+[район]
+(*
+    <- lang_ru;;
+*);
+[district]
+(*
+    <- lang_en;;
+*);;
+concept_district <= nrel_inclusion:
+    concept_city_set_of_administrative_units;;
+concept_district <= nrel_first_domain:
+    concept_public_transport_route;;

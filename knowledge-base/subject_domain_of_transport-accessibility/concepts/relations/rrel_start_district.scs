@@ -1,0 +1,12 @@
+rrel_start_district
+<- sc_node_role_relation;
+
+=> nrel_main_idtf:
+    [начальный район*]
+    (*
+        <- lang_ru;;
+    *);
+    [start district*]
+    (*
+        <- lang_en;;
+    *);;

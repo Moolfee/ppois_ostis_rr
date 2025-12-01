@@ -1,0 +1,118 @@
+
+centralny
+<- concept_district;
+=> nrel_main_idtf:
+    [Центральный район]
+    (*
+        <- lang_ru;;
+    *);
+    [Centralny district]
+    (*
+        <- lang_en;;
+    *);;
+
+kirovskiy
+<- concept_district;
+=> nrel_main_idtf:
+    [Кировский район]
+    (*
+        <- lang_ru;;
+    *);
+    [Kirovskiy district]
+    (*
+        <- lang_en;;
+    *);;
+
+leninskiy
+<- concept_district;
+=> nrel_main_idtf:
+    [Ленинский район]
+    (*
+        <- lang_ru;;
+    *);
+    [Leninskiy district]
+    (*
+        <- lang_en;;
+    *);;
+
+sovetskiy
+<- concept_district;
+=> nrel_main_idtf:
+    [Советский район]
+    (*
+        <- lang_ru;;
+    *);
+    [Sovetskiy district]
+    (*
+        <- lang_en;;
+    *);;
+
+oktyabrskiy
+<- concept_district;
+=> nrel_main_idtf:
+    [Октябрьский район]
+    (*
+        <- lang_ru;;
+    *);
+    [Oktyabrskiy district]
+    (*
+        <- lang_en;;
+    *);;
+
+zaeltsovskiy
+<- concept_district;
+=> nrel_main_idtf:
+    [Заельцовский район]
+    (*
+        <- lang_ru;;
+    *);
+    [Zaeltsovskiy district]
+    (*
+        <- lang_en;;
+    *);;
+
+dzerzhinskiy
+<- concept_district;
+=> nrel_main_idtf:
+    [Дзержинский район]
+    (*
+        <- lang_ru;;
+    *);
+    [Dzerzhinskiy district]
+    (*
+        <- lang_en;;
+    *);;
+
+zheleznodorozhnyy
+<- concept_district;
+=> nrel_main_idtf:
+    [Железнодорожный район]
+    (*
+        <- lang_ru;;
+    *);
+    [Zheleznodorozhnyy district]
+    (*
+        <- lang_en;;
+    *);;
+
+novosibirsk_districts
+=> nrel_main_idtf:
+    [районы города Новосибирска]
+    (*
+        <- lang_ru;;
+    *);
+    [districts of Novosibirsk]
+    (*
+        <- lang_en;;
+    *);;
+
+novosibirsk_districts <- sc_node_structure;;
+
+novosibirsk_districts -> centralny;;
+novosibirsk_districts -> kirovskiy;;
+novosibirsk_districts -> leninskiy;;
+novosibirsk_districts -> sovetskiy;;
+novosibirsk_districts -> oktyabrskiy;;
+novosibirsk_districts -> zaeltsovskiy;;
+novosibirsk_districts -> dzerzhinskiy;;
+novosibirsk_districts -> zheleznodorozhnyy;;

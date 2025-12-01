@@ -35,4 +35,6 @@ find_package(sc-machine REQUIRED)
 find_package(scl-machine REQUIRED)
 find_package(ps-common-lib REQUIRED)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/problem-solver)

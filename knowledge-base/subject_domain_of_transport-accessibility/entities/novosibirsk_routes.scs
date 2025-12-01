@@ -159,23 +159,6 @@ route_bus_23
         zheleznodorozhnyy;;
 
 
-route_bus_31
-<- concept_bus_route;
-<- concept_public_transport_route;
-=> nrel_main_idtf:
-    [автобус №31]
-    (*
-        <- lang_ru;;
-    *);
-    [bus No. 31]
-    (*
-        <- lang_en;;
-    *);
-=> nrel_transport_type: bus;
-=> nrel_connects_districts: 
-        zaeltsovskiy;
-        zheleznodorozhnyy;;
-
 route_bus_42
 <- concept_bus_route;
 <- concept_public_transport_route;
@@ -241,8 +224,8 @@ route_bus_16
     *);
 => nrel_transport_type: bus;
 => nrel_connects_districts:
-    centralny;
-    sovetskiy;;
+        centralny;
+        sovetskiy;;
 
 route_bus_18
 <- concept_bus_route;
@@ -261,57 +244,6 @@ route_bus_18
     centralny;
     oktyabrskiy;;
 
-route_bus_20
-<- concept_bus_route;
-<- concept_public_transport_route;
-=> nrel_main_idtf:
-    [автобус №20]
-    (*
-        <- lang_ru;;
-    *);
-    [bus No. 20]
-    (*
-        <- lang_en;;
-    *);
-=> nrel_transport_type: bus;
-=> nrel_connects_districts:
-    centralny;
-    zaeltsovskiy;;
-
-route_bus_26
-<- concept_bus_route;
-<- concept_public_transport_route;
-=> nrel_main_idtf:
-    [автобус №26]
-    (*
-        <- lang_ru;;
-    *);
-    [bus No. 26]
-    (*
-        <- lang_en;;
-    *);
-=> nrel_transport_type: bus;
-=> nrel_connects_districts:
-    centralny;
-    dzerzhinskiy;;
-
-route_metro_line2
-<- concept_metro_route;
-<- concept_public_transport_route;
-=> nrel_main_idtf:
-    [метро линия 2]
-    (*
-        <- lang_ru;;
-    *);
-    [metro line 2]
-    (*
-        <- lang_en;;
-    *);
-=> nrel_transport_type: metro;
-=> nrel_connects_districts:
-    centralny;
-    zheleznodorozhnyy;;
-
 route_tram_6
 <- concept_tram_route;
 <- concept_public_transport_route;
@@ -328,3 +260,54 @@ route_tram_6
 => nrel_connects_districts:
     leninskiy;
     kirovskiy;;
+
+route_bus_16
+<- concept_bus_route;
+<- concept_public_transport_route;
+=> nrel_main_idtf:
+    [автобус №16]
+    (*
+        <- lang_ru;;
+    *);
+    [bus No. 16]
+    (*
+        <- lang_en;;
+    *);
+=> nrel_transport_type: bus;
+=> nrel_connects_districts:
+    leninskiy;
+    sovetskiy;;
+
+route_bus_20
+<- concept_bus_route;
+<- concept_public_transport_route;
+=> nrel_main_idtf:
+    [автобус №20]
+    (*
+        <- lang_ru;;
+    *);
+    [bus No. 20]
+    (*
+        <- lang_en;;
+    *);
+=> nrel_transport_type: bus;
+=> nrel_connects_districts:
+    sovetskiy;
+    zaeltsovskiy;;
+
+route_bus_60
+<- concept_bus_route;
+<- concept_public_transport_route;
+=> nrel_main_idtf:
+    [автобус №60]
+    (*
+        <- lang_ru;;
+    *);
+    [bus No. 60]
+    (*
+        <- lang_en;;
+    *);
+=> nrel_transport_type: bus;
+=> nrel_connects_districts:
+    oktyabrskiy;
+    sovetskiy;;

@@ -1,0 +1,14 @@
+action_analyze_transport_accessibility
+<- sc_node_class;
+<- concept_class;
+=> nrel_main_idtf:
+    [действие анализа транспортной доступности районов города]
+    (*
+        <- lang_ru;;
+    *);
+    [action to analyze transport accessibility of city districts]
+    (*
+        <- lang_en;;
+    *);
+<= nrel_inclusion:
+    concept_route_action;;
