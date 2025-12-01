@@ -78,6 +78,13 @@ ScResult CheckGraphConnectivityAgent::DoProgram(ScAction & action)
   int n = districts.size();
 
   std::vector<std::vector<int>> adj(n);
+  struct RouteEdge
+  {
+    ScAddr route;
+    ScAddr d1;
+    ScAddr d2;
+  };
+  std::vector<RouteEdge> edges;
 
   for (ScAddr const & route : routes)
   {
@@ -127,13 +134,17 @@ ScResult CheckGraphConnectivityAgent::DoProgram(ScAction & action)
 
     adj[u].push_back(v);
     adj[v].push_back(u);
+
+    edges.push_back(RouteEdge{route, d1, d2});
   }
 
   std::vector<bool> visited(n, false);
 
+  // Точка старта DFS — первый найденный район в графе
+  int const startIndex = 0;
   std::stack<int> st;
-  st.push(0);
-  visited[0] = true;
+  st.push(startIndex);
+  visited[startIndex] = true;
 
   while (!st.empty())
   {
@@ -162,6 +173,18 @@ ScResult CheckGraphConnectivityAgent::DoProgram(ScAction & action)
 
   ScStructure result = m_context.GenerateStructure();
 
+  // Помечаем стартовую вершину обхода
+  {
+    ScAddr startArc = m_context.GenerateConnector(
+        ScType::ConstPermPosArc,
+        result,
+        districts[startIndex]);
+    m_context.GenerateConnector(
+        ScType::ConstPermPosArc,
+        TransportAccessibilityKeynodes::rrel_start_district,
+        startArc);
+  }
+
   // Фиксируем факт связности: graph --nrel_graph_connectivity--> link(true/false)
   ScAddr connectivityLink = m_context.GenerateLink();
   m_context.SetLinkContent(connectivityLink, isConnected ? "true" : "false");
@@ -179,8 +202,36 @@ ScResult CheckGraphConnectivityAgent::DoProgram(ScAction & action)
   result << connectivityLink << connectivityArc << connectivityRel
          << TransportAccessibilityKeynodes::nrel_graph_connectivity;
 
-  // Если есть недостижимые районы — возвращаем отдельное множество
-  if (!isConnected)
+  // Множество достижимых районов (и маршрутов между ними)
+  ScAddr reachableSet = m_context.GenerateNode(ScType::ConstNodeStructure);
+  result << reachableSet;
+  for (int i = 0; i < n; ++i)
+  {
+    if (visited[i])
+    {
+      ScAddr arc = m_context.GenerateConnector(
+          ScType::ConstPermPosArc,
+          reachableSet,
+          districts[i]);
+      result << arc << districts[i];
+    }
+  }
+  for (auto const & e : edges)
+  {
+    int u = districtIndex[e.d1];
+    int v = districtIndex[e.d2];
+    if (visited[u] && visited[v])
+    {
+      ScAddr arc = m_context.GenerateConnector(
+          ScType::ConstPermPosArc,
+          reachableSet,
+          e.route);
+      result << arc << e.route;
+    }
+  }
+
+  // Если есть недостижимые районы — добавляем отдельное множество
+  if (!isConnected && !unreachable.empty())
   {
     ScAddr unreachableSet = m_context.GenerateNode(ScType::ConstNodeStructure);
     result << unreachableSet;

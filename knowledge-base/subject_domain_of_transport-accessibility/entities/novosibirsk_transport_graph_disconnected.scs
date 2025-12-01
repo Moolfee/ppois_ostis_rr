@@ -1,4 +1,4 @@
-novosibirsk_transport_disconnected_graph
+novosibirsk_transport_graph_disconnected
 <- concept_transport_infrastructure_element;
 => nrel_main_idtf:
     [граф несвязных транспортных связей районов Новосибирска]
@@ -10,20 +10,20 @@ novosibirsk_transport_disconnected_graph
         <- lang_en;;
     *);;
 
-novosibirsk_transport_graph <- sc_node_structure;;
+novosibirsk_transport_graph_disconnected <- sc_node_structure;;
 
-novosibirsk_transport_disconnected_graph -> centralny;;
-novosibirsk_transport_disconnected_graph -> kirovskiy;;
-novosibirsk_transport_disconnected_graph -> leninskiy;;
-novosibirsk_transport_disconnected_graph -> sovetskiy;;
-novosibirsk_transport_disconnected_graph -> oktyabrskiy;;
-novosibirsk_transport_disconnected_graph -> zaeltsovskiy;;
-novosibirsk_transport_disconnected_graph -> dzerzhinskiy;;
-novosibirsk_transport_disconnected_graph -> zheleznodorozhnyy;;
+novosibirsk_transport_graph_disconnected -> centralny;;
+novosibirsk_transport_graph_disconnected -> kirovskiy;;
+novosibirsk_transport_graph_disconnected -> leninskiy;;
+novosibirsk_transport_graph_disconnected -> sovetskiy;;
+novosibirsk_transport_graph_disconnected -> oktyabrskiy;;
+novosibirsk_transport_graph_disconnected -> zaeltsovskiy;;
+novosibirsk_transport_graph_disconnected -> dzerzhinskiy;;
+novosibirsk_transport_graph_disconnected -> zheleznodorozhnyy;;
 
-novosibirsk_transport_disconnected_graph -> route_bus_5;;
-novosibirsk_transport_disconnected_graph -> route_metro_line1;;
-novosibirsk_transport_disconnected_graph -> route_bus_12;;
-novosibirsk_transport_disconnected_graph -> route_bus_7;;
-novosibirsk_transport_disconnected_graph-> route_bus_23;;
-novosibirsk_transport_disconnected_graph -> route_bus_31;;
+novosibirsk_transport_graph_disconnected -> route_bus_5;;
+novosibirsk_transport_graph_disconnected -> route_metro_line1;;
+novosibirsk_transport_graph_disconnected -> route_bus_12;;
+novosibirsk_transport_graph_disconnected -> route_bus_7;;
+novosibirsk_transport_graph_disconnected -> route_bus_23;;
+novosibirsk_transport_graph_disconnected -> route_bus_31;;
