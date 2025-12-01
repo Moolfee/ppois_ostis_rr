@@ -1,7 +1,7 @@
 novosibirsk_transport_graph
 <- concept_transport_infrastructure_element;
 => nrel_main_idtf:
-    [граф транспортных связей районов Новосибирска]
+    [граф несвязных транспортных связей районов Новосибирска]
     (*
         <- lang_ru;;
     *);
