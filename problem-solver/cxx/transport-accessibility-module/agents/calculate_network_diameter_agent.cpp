@@ -48,6 +48,7 @@ ScResult CalculateNetworkDiameterAgent::DoProgram(ScAction & action)
 
   // 4. Вычисляем диаметр графа
   int diameter = g.Diameter(dist, INF);
+  m_logger.Info("Calculated network diameter: ", diameter);
 
   // 5. Формируем SC-структуру результата
   ScStructure result = m_context.GenerateStructure();
@@ -57,8 +58,8 @@ ScResult CalculateNetworkDiameterAgent::DoProgram(ScAction & action)
   result << resultNode;
 
   // 5.1. Link с численным значением диаметра
-  ScAddr diameterLink = m_context.GenerateLink();
-  m_context.SetLinkContent(diameterLink, diameter);
+  ScAddr diameterLink = m_context.GenerateLink(ScType::ConstNodeLink);
+  m_context.SetLinkContent(diameterLink, std::to_string(diameter));
 
   // graphAddr => nrel_network_diameter: diameterLink;;
   ScAddr arcCommon = m_context.GenerateConnector(
