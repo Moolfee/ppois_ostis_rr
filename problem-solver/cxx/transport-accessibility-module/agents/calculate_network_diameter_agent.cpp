@@ -10,7 +10,6 @@
 #include "utils/BuildGraphFromSc.hpp"
 
 #include <vector>
-#include <string>
 
 ScAddr CalculateNetworkDiameterAgent::GetActionClass() const
 {
@@ -43,7 +42,7 @@ ScResult CalculateNetworkDiameterAgent::DoProgram(ScAction & action)
     return action.FinishSuccessfully();
   }
 
-  // 3. Считаем матрицу кратчайших расстояний (Floyd–Warshall)
+  // 3. Считаем матрицу кратчайших расстояний (Floyd-Warshall)
   int const INF = 1000000000;
   std::vector<std::vector<int>> dist = g.FloydWarshall(INF);
 
@@ -53,19 +52,15 @@ ScResult CalculateNetworkDiameterAgent::DoProgram(ScAction & action)
   // 5. Формируем SC-структуру результата
   ScStructure result = m_context.GenerateStructure();
 
-  // Узел-структура результата (контейнер, куда повесим rrel_diameter_value)
-  ScAddr resultNode = m_context.GenerateNode(ScType::ConstNodeStruct);
+  // Узел-структура результата (контейнер, куда будем вешать rrel_diameter_value)
+  ScAddr resultNode = m_context.GenerateNode(ScType::ConstNodeStructure);
   result << resultNode;
 
   // 5.1. Link с численным значением диаметра
-  ScAddr diameterLink = m_context.GenerateLink(ScType::ConstNodeLink);
+  ScAddr diameterLink = m_context.GenerateLink();
+  m_context.SetLinkContent(diameterLink, diameter);
 
-  // Пишем значение как строку — самый безопасный вариант
-  std::string diameterStr = std::to_string(diameter);
-  m_context.SetLinkContent(diameterLink, diameterStr);
-
-  // graphAddr => nrel_network_diametr: diameterLink;;
-  // (обрати внимание: именно nrel_network_diametr, как в .scs)
+  // graphAddr => nrel_network_diameter: diameterLink;;
   ScAddr arcCommon = m_context.GenerateConnector(
       ScType::ConstCommonArc,
       graphAddr,
@@ -73,7 +68,7 @@ ScResult CalculateNetworkDiameterAgent::DoProgram(ScAction & action)
 
   ScAddr arcRel = m_context.GenerateConnector(
       ScType::ConstPermPosArc,
-      TransportAccessibilityKeynodes::nrel_network_diametr,
+      TransportAccessibilityKeynodes::nrel_network_diameter,
       arcCommon);
 
   // Включаем link в структуру результата с ролевым отношением rrel_diameter_value

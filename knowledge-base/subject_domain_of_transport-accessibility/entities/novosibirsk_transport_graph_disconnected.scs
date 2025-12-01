@@ -23,9 +23,7 @@ novosibirsk_transport_graph -> zheleznodorozhnyy;;
 
 novosibirsk_transport_graph -> route_bus_5;;
 novosibirsk_transport_graph -> route_metro_line1;;
-novosibirsk_transport_graph -> route_tram_4;;
 novosibirsk_transport_graph -> route_bus_12;;
 novosibirsk_transport_graph -> route_bus_7;;
-novosibirsk_transport_graph -> route_bus_15;;
 novosibirsk_transport_graph -> route_bus_23;;
 novosibirsk_transport_graph -> route_bus_31;;
