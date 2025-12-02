@@ -9,10 +9,8 @@ class TransportAccessibilityKeynodes : public ScKeynodes
 public:
   static inline ScKeynode const action_check_graph_connectivity{"action_check_graph_connectivity", ScType::ConstNodeClass};
   static inline ScKeynode const action_find_shortest_route{"action_find_shortest_route", ScType::ConstNodeClass};
-  static inline ScKeynode const action_find_central_district{"action_find_central_district", ScType::ConstNodeClass};
-  static inline ScKeynode const action_find_bridge_routes{"action_find_bridge_routes", ScType::ConstNodeClass};
-  static inline ScKeynode const action_calculate_network_diameter{"action_calculate_network_diameter", ScType::ConstNodeClass};
   static inline ScKeynode const action_analyze_transport_accessibility{"action_analyze_transport_accessibility", ScType::ConstNodeClass};
+  static inline ScKeynode const action_dump_transport_graph{"action_dump_transport_graph", ScType::ConstNodeClass};
 
   static inline ScKeynode const concept_district{"concept_district", ScType::ConstNodeClass};
   static inline ScKeynode const concept_public_transport_route{"concept_public_transport_route", ScType::ConstNodeClass};
