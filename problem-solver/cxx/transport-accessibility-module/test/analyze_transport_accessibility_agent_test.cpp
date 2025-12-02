@@ -4,6 +4,8 @@
 #include "agents/analyze_transport_accessibility_agent.hpp"
 #include "keynodes/transport_accessibility_keynodes.hpp"
 
+#include <string>
+
 using AgentTest = ScMemoryTest;
 
 // Кольцо из четырёх районов: 0-1-2-3-0 (диаметр 2, связный)
@@ -60,8 +62,8 @@ TEST_F(AgentTest, AnalyzeReturnsConnectivityAndDiameter)
   ScAddr graph = BuildRing4(*m_ctx);
 
   ScAction action = m_ctx->GenerateAction(
-      TransportAccessibilityKeynodes::action_analyze_transport_accessibility,
-      graph);
+      TransportAccessibilityKeynodes::action_analyze_transport_accessibility);
+  action.SetArguments(graph);
 
   EXPECT_TRUE(action.InitiateAndWait());
   EXPECT_TRUE(action.IsFinishedSuccessfully());
@@ -74,14 +76,14 @@ TEST_F(AgentTest, AnalyzeReturnsConnectivityAndDiameter)
     ScIterator5Ptr it = m_ctx->CreateIterator5(
         graph,
         ScType::ConstCommonArc,
-        ScType::ConstLink,
+        ScType::ConstNodeLink,
         ScType::ConstPermPosArc,
         TransportAccessibilityKeynodes::nrel_graph_connectivity);
     ASSERT_TRUE(it->Next());
     ScAddr link = it->Get(2);
-    ScLinkContent content;
+    std::string content;
     m_ctx->GetLinkContent(link, content);
-    EXPECT_EQ(content.AsString(), "true");
+    EXPECT_EQ(content, "true");
   }
 
   // graph -> nrel_network_diameter: link("2")
@@ -89,14 +91,14 @@ TEST_F(AgentTest, AnalyzeReturnsConnectivityAndDiameter)
     ScIterator5Ptr it = m_ctx->CreateIterator5(
         graph,
         ScType::ConstCommonArc,
-        ScType::ConstLink,
+        ScType::ConstNodeLink,
         ScType::ConstPermPosArc,
         TransportAccessibilityKeynodes::nrel_network_diameter);
     ASSERT_TRUE(it->Next());
     ScAddr link = it->Get(2);
-    ScLinkContent content;
+    std::string content;
     m_ctx->GetLinkContent(link, content);
-    EXPECT_EQ(content.AsString(), "2");
+    EXPECT_EQ(content, "2");
   }
 
   m_ctx->UnsubscribeAgent<AnalyzeTransportAccessibilityAgent>();
