@@ -1,0 +1,14 @@
+action_brirdge_edges
+<- sc_node_class;
+<- concept_class;
+=> nrel_main_idtf:
+    [действие поиска мостовых соединений]
+    (* 
+        <- lang_ru;;
+    *);
+    [action to find bridge edges]
+    (*
+        <- lang_en;;
+    *);
+<= nrel_inclusion:
+    concept_route_action;;

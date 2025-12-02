@@ -1,0 +1,14 @@
+action_dfs_connectivity
+<- sc_node_class;
+<- concept_class;
+=> nrel_main_idtf:
+    [действие проверки связности графа через DFS]
+    (* 
+        <- lang_ru;;
+    *);
+    [action to check graph connectivity via DFS]
+    (*
+        <- lang_en;;
+    *);
+<= nrel_inclusion:
+    concept_route_action;;

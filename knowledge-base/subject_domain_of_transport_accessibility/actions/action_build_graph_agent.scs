@@ -1,0 +1,14 @@
+action_build_graph
+<- sc_node_class;
+<- concept_class;
+=> nrel_main_idtf:
+    [действие построения графа]
+    (* 
+        <- lang_ru;;
+    *);
+    [action to build graph]
+    (*
+        <- lang_en;;
+    *);
+<= nrel_inclusion:
+    concept_route_action;;
