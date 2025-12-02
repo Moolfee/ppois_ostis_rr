@@ -1,15 +1,23 @@
 #include "BuildGraphFromSc.hpp"
 
 #include <map>
+#include <set>
 
 GraphFromScResult BuildGraphFromSc(ScMemoryContext & ctx, ScAddr const & graphAddr)
 {
   GraphFromScResult result;
 
   // ------------------------------
-  // 1. Собираем районы
+  // 1. Собираем районы (включая те, что встретятся только в маршрутах)
   // ------------------------------
   std::vector<ScAddr> districts;
+  std::set<ScAddr, ScAddrLessFunc> districtSeen;
+
+  auto addDistrict = [&](ScAddr const & d)
+  {
+    if (d.IsValid() && districtSeen.insert(d).second)
+      districts.push_back(d);
+  };
 
   auto collectDistricts = [&](ScType const arcType)
   {
@@ -34,32 +42,18 @@ GraphFromScResult BuildGraphFromSc(ScMemoryContext & ctx, ScAddr const & graphAd
           elem);
 
       if (itDistrictClassConst->Next() || itDistrictClassVar->Next())
-        districts.push_back(elem);
+        addDistrict(elem);
     }
   };
 
   collectDistricts(ScType::ConstPermPosArc);
   collectDistricts(ScType::VarPermPosArc);
 
-  int n = static_cast<int>(districts.size());
-  result.districts = districts;
-  result.graph = Graph(n);
-
-  if (n == 0)
-    return result;
-
   // ------------------------------
-  // 2. Индекс района ScAddr -> int
-  // ------------------------------
-  std::map<ScAddr, int, ScAddrLessFunc> index;
-
-  for (int i = 0; i < n; ++i)
-    index[districts[i]] = i;
-
-  // ------------------------------
-  // 3. Собираем маршруты
+  // 2. Собираем маршруты и их конечные районы
   // ------------------------------
   std::vector<ScAddr> routes;
+  std::vector<std::vector<ScAddr>> routeEndpoints;  // по индексу в routes
 
   auto collectRoutes = [&](ScType const arcType)
   {
@@ -84,18 +78,40 @@ GraphFromScResult BuildGraphFromSc(ScMemoryContext & ctx, ScAddr const & graphAd
           elem);
 
       if (itRouteClassConst->Next() || itRouteClassVar->Next())
+      {
         routes.push_back(elem);
+        routeEndpoints.emplace_back();
+      }
     }
   };
 
   collectRoutes(ScType::ConstPermPosArc);
   collectRoutes(ScType::VarPermPosArc);
 
-  // ------------------------------
-  // 4. Для каждого маршрута добавляем ребро
-  // ------------------------------
-  for (ScAddr const & route : routes)
+  // убираем дубликаты маршрутов (сохраняем первый встретившийся)
   {
+    std::set<ScAddr, ScAddrLessFunc> seen;
+    std::vector<ScAddr> uniqueRoutes;
+    std::vector<std::vector<ScAddr>> uniqueEndpoints;
+    for (size_t idx = 0; idx < routes.size(); ++idx)
+    {
+      ScAddr const & r = routes[idx];
+      if (seen.insert(r).second)
+      {
+        uniqueRoutes.push_back(r);
+        uniqueEndpoints.push_back(routeEndpoints[idx]);
+      }
+    }
+    routes.swap(uniqueRoutes);
+    routeEndpoints.swap(uniqueEndpoints);
+  }
+
+  // ------------------------------
+  // 3. Для каждого маршрута собираем районы, параллельно пополняя districts
+  // ------------------------------
+  for (size_t routeIdx = 0; routeIdx < routes.size(); ++routeIdx)
+  {
+    ScAddr const & route = routes[routeIdx];
     std::vector<ScAddr> pairDistricts;
 
     // --- Вариант 1: через множество districtSet
@@ -169,19 +185,59 @@ GraphFromScResult BuildGraphFromSc(ScMemoryContext & ctx, ScAddr const & graphAd
     collectDirect(ScType::VarCommonArc, ScType::ConstPermPosArc);
     collectDirect(ScType::VarCommonArc, ScType::VarPermPosArc);
 
-    if (pairDistricts.size() != 2)
+    // удаляем дубликаты районов в маршруте
+    {
+      std::set<ScAddr, ScAddrLessFunc> uniqueSet;
+      std::vector<ScAddr> filtered;
+      for (ScAddr const & d : pairDistricts)
+      {
+        if (uniqueSet.insert(d).second)
+          filtered.push_back(d);
+      }
+      pairDistricts.swap(filtered);
+    }
+
+    routeEndpoints[routeIdx] = pairDistricts;
+
+    // добавляем новые районы в общий список
+    if (pairDistricts.size() == 2)
+    {
+      addDistrict(pairDistricts[0]);
+      addDistrict(pairDistricts[1]);
+    }
+  }
+
+  // ------------------------------
+  // 4. Создаём граф и индекс ScAddr -> int
+  // ------------------------------
+  int n = static_cast<int>(districts.size());
+  result.districts = districts;
+  result.graph = Graph(n);
+
+  if (n == 0)
+    return result;
+
+  std::map<ScAddr, int, ScAddrLessFunc> index;
+  for (int i = 0; i < n; ++i)
+    index[districts[i]] = i;
+
+  // ------------------------------
+  // 5. Добавляем рёбра на основе сохранённых endpoints
+  // ------------------------------
+  for (auto const & endpoints : routeEndpoints)
+  {
+    if (endpoints.size() != 2)
       continue;
 
-    ScAddr d1 = pairDistricts[0];
-    ScAddr d2 = pairDistricts[1];
+    ScAddr d1 = endpoints[0];
+    ScAddr d2 = endpoints[1];
 
-    if (!index.count(d1) || !index.count(d2))
+    auto it1 = index.find(d1);
+    auto it2 = index.find(d2);
+    if (it1 == index.end() || it2 == index.end())
       continue;
 
-    int u = index[d1];
-    int v = index[d2];
-
-    result.graph.AddEdge(u, v);
+    result.graph.AddEdge(it1->second, it2->second);
   }
 
   return result;

@@ -52,11 +52,11 @@ ScResult FindShortestRouteAgent::DoProgram(ScAction & action)
 
   // 4. Формируем SC-структуру результата
   ScStructure result = m_context.GenerateStructure();
+  result << graphAddr;  // добавляем исходный граф в структуру результата, чтобы он точно отображался
 
   // Узел-контейнер результата (чтобы sc-web точно отобразил структуру)
   ScAddr resultNode = m_context.GenerateNode(ScType::ConstNodeStructure);
   result << resultNode;
-
   // Узел–структура для всех кратчайших расстояний
   ScAddr shortestTableNode = m_context.GenerateNode(ScType::ConstNodeStructure);
   result << shortestTableNode;
@@ -76,79 +76,85 @@ ScResult FindShortestRouteAgent::DoProgram(ScAction & action)
       shortestTableNode);
   result << arcTable;
 
+  auto makeId = [&](int idx) -> std::string
+  {
+    std::string idtf = m_context.GetElementSystemIdentifier(districts[idx]);
+    if (idtf.empty())
+      idtf = "district_" + std::to_string(idx);
+    return idtf;
+  };
+
+  auto addPair = [&](int i, int j)
+  {
+    bool reachable = dist[i][j] != INF;
+
+    ScAddr pairNode = m_context.GenerateNode(ScType::ConstNodeStructure);
+    result << pairNode;
+
+    // start_district
+    ScAddr arcStart = m_context.GenerateConnector(
+        ScType::ConstCommonArc,
+        pairNode,
+        districts[i]);
+
+    ScAddr arcStartRole = m_context.GenerateConnector(
+        ScType::ConstPermPosArc,
+        TransportAccessibilityKeynodes::rrel_start_district,
+        arcStart);
+
+    // end_district
+    ScAddr arcEnd = m_context.GenerateConnector(
+        ScType::ConstCommonArc,
+        pairNode,
+        districts[j]);
+
+    ScAddr arcEndRole = m_context.GenerateConnector(
+        ScType::ConstPermPosArc,
+        TransportAccessibilityKeynodes::rrel_end_district,
+        arcEnd);
+
+    std::string textValue = makeId(i) + "->" + makeId(j) + ": ";
+    textValue += reachable ? std::to_string(dist[i][j]) : "no path";
+
+    ScAddr distanceLink = m_context.GenerateLink();
+    m_context.SetLinkContent(distanceLink, textValue);
+
+    ScAddr arcCommonDist = m_context.GenerateConnector(
+        ScType::ConstCommonArc,
+        pairNode,
+        distanceLink);
+
+    ScAddr arcRelDist = m_context.GenerateConnector(
+        ScType::ConstPermPosArc,
+        TransportAccessibilityKeynodes::nrel_shortest_distance,
+        arcCommonDist);
+
+    // включаем pairNode в общую структуру
+    ScAddr arcToTable = m_context.GenerateConnector(
+        ScType::ConstPermPosArc,
+        shortestTableNode,
+        pairNode);
+
+    result << arcStart << arcStartRole
+           << arcEnd << arcEndRole
+           << distanceLink << arcCommonDist << arcRelDist
+           << arcToTable;
+  };
+
   bool hasPairs = false;
 
-  // Для каждой пары (i,j), i < j, создаём описатель кратчайшего пути
+  // Для каждой упорядоченной пары (i != j) создаём описатель кратчайшего пути.
+  // В запросах через роли rrel_start_district / rrel_end_district важна ориентация,
+  // поэтому создаём оба направления без попыток "склеить" в один узел.
   for (int i = 0; i < n; ++i)
   {
-    for (int j = i + 1; j < n; ++j)
+    for (int j = 0; j < n; ++j)
     {
-      bool reachable = dist[i][j] != INF;
+      if (i == j)
+        continue;
 
-      ScAddr pairNode = m_context.GenerateNode(ScType::ConstNodeStructure);
-      result << pairNode;
-
-      // start_district
-      ScAddr arcStart = m_context.GenerateConnector(
-          ScType::ConstCommonArc,
-          pairNode,
-          districts[i]);
-
-      ScAddr arcStartRole = m_context.GenerateConnector(
-          ScType::ConstPermPosArc,
-          TransportAccessibilityKeynodes::rrel_start_district,
-          arcStart);
-
-      // end_district
-      ScAddr arcEnd = m_context.GenerateConnector(
-          ScType::ConstCommonArc,
-          pairNode,
-          districts[j]);
-
-      ScAddr arcEndRole = m_context.GenerateConnector(
-          ScType::ConstPermPosArc,
-          TransportAccessibilityKeynodes::rrel_end_district,
-          arcEnd);
-
-      // link с расстоянием в человеко-читаемом виде "A<->B: N" или "A<->B: no path"
-      std::string startId = m_context.GetElementSystemIdentifier(districts[i]);
-      std::string endId = m_context.GetElementSystemIdentifier(districts[j]);
-      if (startId.empty())
-        startId = "district_" + std::to_string(i);
-      if (endId.empty())
-        endId = "district_" + std::to_string(j);
-
-      std::string textValue;
-      if (reachable)
-        textValue = startId + "<->" + endId + ": " + std::to_string(dist[i][j]);
-      else
-        textValue = startId + "<->" + endId + ": no path";
-
-      ScAddr distanceLink = m_context.GenerateLink();
-      m_context.SetLinkContent(distanceLink, textValue);
-
-      ScAddr arcCommonDist = m_context.GenerateConnector(
-          ScType::ConstCommonArc,
-          pairNode,
-          distanceLink);
-
-      ScAddr arcRelDist = m_context.GenerateConnector(
-          ScType::ConstPermPosArc,
-          TransportAccessibilityKeynodes::nrel_shortest_distance,
-          arcCommonDist);
-
+      addPair(i, j);
       hasPairs = true;
-
-      // включаем pairNode в общую структуру
-      ScAddr arcToTable = m_context.GenerateConnector(
-          ScType::ConstPermPosArc,
-          shortestTableNode,
-          pairNode);
-
-      result << arcStart << arcStartRole
-             << arcEnd << arcEndRole
-             << distanceLink << arcCommonDist << arcRelDist
-             << arcToTable;
     }
   }
 
