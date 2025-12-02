@@ -46,6 +46,19 @@ ScResult FindShortestRouteAgent::DoProgram(ScAction & action)
   }
 
   std::vector<std::vector<int>> dist = g.FloydWarshall(kInf);
+  int diameter = g.Diameter(dist, kInf);
+  bool hasInf = false;
+  for (int i = 0; i < n && !hasInf; ++i)
+  {
+    for (int j = 0; j < n; ++j)
+    {
+      if (dist[i][j] == kInf)
+      {
+        hasInf = true;
+        break;
+      }
+    }
+  }
 
   ScStructure result = m_context.GenerateStructure();
   result << graphAddr;
@@ -71,6 +84,35 @@ ScResult FindShortestRouteAgent::DoProgram(ScAction & action)
       resultNode,
       tableNode);
   result << arcTable;
+
+  {
+    ScAddr diamLink = m_context.GenerateLink();
+    m_context.SetLinkContent(
+        diamLink,
+        hasInf ? std::string("diameter: undefined (disconnected)") : std::string("diameter: ") + std::to_string(diameter));
+
+    ScAddr arcCommon = m_context.GenerateConnector(
+        ScType::ConstCommonArc,
+        graphAddr,
+        diamLink);
+
+    ScAddr arcRel = m_context.GenerateConnector(
+        ScType::ConstPermPosArc,
+        TransportAccessibilityKeynodes::nrel_network_diameter,
+        arcCommon);
+
+    ScAddr arcToResult = m_context.GenerateConnector(
+        ScType::ConstPermPosArc,
+        resultNode,
+        diamLink);
+
+    ScAddr arcRole = m_context.GenerateConnector(
+        ScType::ConstPermPosArc,
+        TransportAccessibilityKeynodes::rrel_diameter_value,
+        arcToResult);
+
+    result << diamLink << arcCommon << arcRel << arcToResult << arcRole;
+  }
 
   auto makeId = [&](int idx) -> std::string
   {
@@ -105,7 +147,7 @@ ScResult FindShortestRouteAgent::DoProgram(ScAction & action)
         TransportAccessibilityKeynodes::rrel_end_district,
         arcEnd);
 
-    std::string text = makeId(i) + "->" + makeId(j) + ": ";
+    std::string text = makeId(i) + "<->" + makeId(j) + ": ";
     text += reachable ? std::to_string(dist[i][j]) : "no path";
 
     ScAddr distLink = m_context.GenerateLink();
@@ -135,10 +177,8 @@ ScResult FindShortestRouteAgent::DoProgram(ScAction & action)
 
   for (int i = 0; i < n; ++i)
   {
-    for (int j = 0; j < n; ++j)
+    for (int j = i + 1; j < n; ++j)
     {
-      if (i == j)
-        continue;
       addPair(i, j);
       hasPairs = true;
     }

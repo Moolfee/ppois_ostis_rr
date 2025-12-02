@@ -9,6 +9,7 @@
 #include "utils/Graph.hpp"
 #include "utils/BuildGraphFromSc.hpp"
 
+#include <map>
 #include <vector>
 
 ScAddr AnalyzeTransportAccessibilityAgent::GetActionClass() const
@@ -60,6 +61,10 @@ ScResult AnalyzeTransportAccessibilityAgent::DoProgram(ScAction & action)
   // 4. Считаем матрицу расстояний
   std::vector<std::vector<int>> dist = g.FloydWarshall(INF);
 
+  std::map<ScAddr, int, ScAddrLessFunc> index;
+  for (int i = 0; i < n; ++i)
+    index[districts[i]] = i;
+
   // 5. Центральный район (только если связен)
   int centralIndex = isConnected ? g.FindCentralVertex(dist, INF) : -1;
   ScAddr centralDistrict = ScAddr::Empty;
@@ -84,6 +89,130 @@ ScResult AnalyzeTransportAccessibilityAgent::DoProgram(ScAction & action)
   // 7. Мосты (количество)
   std::vector<std::pair<int,int>> bridges = g.FindBridges();
   int bridgesCount = static_cast<int>(bridges.size());
+
+  // 7.1 Собираем маршруты и карту ребро -> маршруты (как в find_bridge_routes_agent)
+  std::vector<ScAddr> routes;
+  auto collectRoutes = [&](ScType arcType)
+  {
+    ScIterator3Ptr it = m_context.CreateIterator3(
+        graphAddr,
+        arcType,
+        ScType::Node);
+
+    while (it->Next())
+    {
+      ScAddr elem = it->Get(2);
+
+      ScIterator3Ptr itRouteClassConst = m_context.CreateIterator3(
+          TransportAccessibilityKeynodes::concept_public_transport_route,
+          ScType::ConstPermPosArc,
+          elem);
+      ScIterator3Ptr itRouteClassVar = m_context.CreateIterator3(
+          TransportAccessibilityKeynodes::concept_public_transport_route,
+          ScType::VarPermPosArc,
+          elem);
+
+      if (itRouteClassConst->Next() || itRouteClassVar->Next())
+        routes.push_back(elem);
+    }
+  };
+  collectRoutes(ScType::ConstPermPosArc);
+  collectRoutes(ScType::VarPermPosArc);
+
+  std::map<std::pair<int,int>, std::vector<ScAddr>> edgeToRoutes;
+
+  for (ScAddr const & route : routes)
+  {
+    std::vector<ScAddr> pair;
+
+    {
+      ScAddr districtSet;
+      auto tryFindSet = [&](ScType arcTypeRole) -> bool
+      {
+        ScIterator5Ptr it = m_context.CreateIterator5(
+            route,
+            ScType::ConstCommonArc,
+            ScType::Node,
+            arcTypeRole,
+            TransportAccessibilityKeynodes::nrel_connects_districts);
+        if (it->Next())
+        {
+          districtSet = it->Get(2);
+          return true;
+        }
+        return false;
+      };
+
+      if (tryFindSet(ScType::ConstPermPosArc) || tryFindSet(ScType::VarPermPosArc))
+      {
+        auto collectFromSet = [&](ScType arcType)
+        {
+          ScIterator3Ptr it = m_context.CreateIterator3(
+              districtSet,
+              arcType,
+              ScType::Node);
+          while (it->Next())
+            pair.push_back(it->Get(2));
+        };
+        collectFromSet(ScType::ConstPermPosArc);
+        collectFromSet(ScType::VarPermPosArc);
+      }
+    }
+
+    auto collectDirect = [&](ScType arcCommonType, ScType arcRoleType)
+    {
+      ScIterator5Ptr it = m_context.CreateIterator5(
+          route,
+          arcCommonType,
+          ScType::Node,
+          arcRoleType,
+          TransportAccessibilityKeynodes::nrel_connects_districts);
+      while (it->Next())
+      {
+        ScAddr cand = it->Get(2);
+        ScIterator3Ptr itDistrictClassConst = m_context.CreateIterator3(
+            TransportAccessibilityKeynodes::concept_district,
+            ScType::ConstPermPosArc,
+            cand);
+        ScIterator3Ptr itDistrictClassVar = m_context.CreateIterator3(
+            TransportAccessibilityKeynodes::concept_district,
+            ScType::VarPermPosArc,
+            cand);
+        if (itDistrictClassConst->Next() || itDistrictClassVar->Next())
+          pair.push_back(cand);
+      }
+    };
+    collectDirect(ScType::ConstCommonArc, ScType::ConstPermPosArc);
+    collectDirect(ScType::ConstCommonArc, ScType::VarPermPosArc);
+    collectDirect(ScType::VarCommonArc, ScType::ConstPermPosArc);
+    collectDirect(ScType::VarCommonArc, ScType::VarPermPosArc);
+
+    // удаляем дубликаты, оставляем только пары
+    {
+      std::set<ScAddr, ScAddrLessFunc> uniq;
+      std::vector<ScAddr> filtered;
+      for (ScAddr const & d : pair)
+      {
+        if (uniq.insert(d).second)
+          filtered.push_back(d);
+      }
+      pair.swap(filtered);
+    }
+
+    if (pair.size() != 2)
+      continue;
+
+    auto it1 = index.find(pair[0]);
+    auto it2 = index.find(pair[1]);
+    if (it1 == index.end() || it2 == index.end())
+      continue;
+
+    int u = it1->second;
+    int v = it2->second;
+    if (u > v) std::swap(u, v);
+
+    edgeToRoutes[{u, v}].push_back(route);
+  }
 
   // 8. Формируем общую SC-структуру результата
   ScStructure result = m_context.GenerateStructure();
@@ -172,6 +301,49 @@ ScResult AnalyzeTransportAccessibilityAgent::DoProgram(ScAction & action)
         arcCommon);  // это отношение тебе нужно завести в KB
 
     result << bridgesCountLink << arcCommon << arcRel;
+  }
+
+  // 8.5. Перечень мостовых маршрутов (как в find_bridge_routes_agent)
+  if (!bridges.empty())
+  {
+    ScAddr bridgeRoutesSet = m_context.GenerateNode(ScType::ConstNodeStructure);
+    result << bridgeRoutesSet;
+
+    for (auto const & e : bridges)
+    {
+      int u = e.first;
+      int v = e.second;
+      if (u > v) std::swap(u, v);
+
+      auto it = edgeToRoutes.find({u, v});
+      if (it == edgeToRoutes.end())
+        continue;
+
+      for (ScAddr const & route : it->second)
+      {
+        ScAddr arcCommon = m_context.GenerateConnector(
+            ScType::ConstCommonArc,
+            route,
+            graphAddr);
+
+        ScAddr arcRel = m_context.GenerateConnector(
+            ScType::ConstPermPosArc,
+            TransportAccessibilityKeynodes::nrel_is_it_bridge_connection,
+            arcCommon);
+
+        ScAddr arcToSet = m_context.GenerateConnector(
+            ScType::ConstPermPosArc,
+            bridgeRoutesSet,
+            route);
+
+        ScAddr arcRole = m_context.GenerateConnector(
+            ScType::ConstPermPosArc,
+            TransportAccessibilityKeynodes::rrel_bridge_route,
+            arcToSet);
+
+        result << arcCommon << arcRel << arcToSet << arcRole << route;
+      }
+    }
   }
 
   action.SetResult(result);
