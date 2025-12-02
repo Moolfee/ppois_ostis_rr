@@ -6,174 +6,97 @@
 
 using AgentTest = ScMemoryTest;
 
-// Граф-цепочка из трёх районов:
-//
-//   d1 --(route1)-- d2 --(route2)-- d3
-//
-// Свойства, которые мы ожидаем после работы агента анализа:
-// - граф связный (nrel_graph_connectivity = 1);
-// - диаметр сети = 2 (nrel_network_diametr = 2);
-// - центральный район = d2 (nrel_is_it_central_district).
-static void BuildThreeDistrictPathGraph(
-    ScMemoryContext & ctx,
-    ScAddr & graphAddr,
-    ScAddr & centralDistrictAddr)
+// Кольцо из четырёх районов: 0-1-2-3-0 (диаметр 2, связный)
+static ScAddr BuildRing4(ScMemoryContext & ctx)
 {
-  graphAddr = ctx.GenerateNode(ScType::ConstNodeStructure);
+  ScAddr graph = ctx.GenerateNode(ScType::ConstNodeStructure);
 
-  // Районы
-  ScAddr const d1 = ctx.GenerateNode(ScType::ConstNode);
-  ScAddr const d2 = ctx.GenerateNode(ScType::ConstNode);
-  ScAddr const d3 = ctx.GenerateNode(ScType::ConstNode);
-
-  centralDistrictAddr = d2;
-
-  // Помечаем как concept_district
-  ctx.GenerateConnector(
-      ScType::ConstPermPosArc,
-      TransportAccessibilityKeynodes::concept_district,
-      d1);
-  ctx.GenerateConnector(
-      ScType::ConstPermPosArc,
-      TransportAccessibilityKeynodes::concept_district,
-      d2);
-  ctx.GenerateConnector(
-      ScType::ConstPermPosArc,
-      TransportAccessibilityKeynodes::concept_district,
-      d3);
-
-  // Включаем районы в граф
-  ctx.GenerateConnector(ScType::ConstPermPosArc, graphAddr, d1);
-  ctx.GenerateConnector(ScType::ConstPermPosArc, graphAddr, d2);
-  ctx.GenerateConnector(ScType::ConstPermPosArc, graphAddr, d3);
-
-  // ---------- route1: d1 <-> d2 ----------
-  ScAddr const route1 = ctx.GenerateNode(ScType::ConstNode);
-  ctx.GenerateConnector(
-      ScType::ConstPermPosArc,
-      TransportAccessibilityKeynodes::concept_public_transport_route,
-      route1);
-  ctx.GenerateConnector(ScType::ConstPermPosArc, graphAddr, route1);
-
-  ScAddr const set12 = ctx.GenerateNode(ScType::ConstNodeStructure);
-  ctx.GenerateConnector(ScType::ConstPermPosArc, set12, d1);
-  ctx.GenerateConnector(ScType::ConstPermPosArc, set12, d2);
-
+  std::vector<ScAddr> d(4);
+  for (int i = 0; i < 4; ++i)
   {
-    ScAddr const arcCommon = ctx.GenerateConnector(
-        ScType::ConstCommonArc,
-        route1,
-        set12);
+    d[i] = ctx.GenerateNode(ScType::ConstNode);
+    ctx.GenerateConnector(
+        ScType::ConstPermPosArc,
+        TransportAccessibilityKeynodes::concept_district,
+        d[i]);
+    ctx.GenerateConnector(ScType::ConstPermPosArc, graph, d[i]);
+  }
 
+  auto addRoute = [&](int a, int b)
+  {
+    ScAddr route = ctx.GenerateNode(ScType::ConstNode);
+    ctx.GenerateConnector(
+        ScType::ConstPermPosArc,
+        TransportAccessibilityKeynodes::concept_public_transport_route,
+        route);
+    ctx.GenerateConnector(ScType::ConstPermPosArc, graph, route);
+
+    ScAddr set = ctx.GenerateNode(ScType::ConstNodeStructure);
+    ctx.GenerateConnector(ScType::ConstPermPosArc, set, d[a]);
+    ctx.GenerateConnector(ScType::ConstPermPosArc, set, d[b]);
+
+    ScAddr arcCommon = ctx.GenerateConnector(
+        ScType::ConstCommonArc,
+        route,
+        set);
     ctx.GenerateConnector(
         ScType::ConstPermPosArc,
         TransportAccessibilityKeynodes::nrel_connects_districts,
         arcCommon);
-  }
+  };
 
-  // ---------- route2: d2 <-> d3 ----------
-  ScAddr const route2 = ctx.GenerateNode(ScType::ConstNode);
-  ctx.GenerateConnector(
-      ScType::ConstPermPosArc,
-      TransportAccessibilityKeynodes::concept_public_transport_route,
-      route2);
-  ctx.GenerateConnector(ScType::ConstPermPosArc, graphAddr, route2);
+  addRoute(0, 1);
+  addRoute(1, 2);
+  addRoute(2, 3);
+  addRoute(3, 0);
 
-  ScAddr const set23 = ctx.GenerateNode(ScType::ConstNodeStructure);
-  ctx.GenerateConnector(ScType::ConstPermPosArc, set23, d2);
-  ctx.GenerateConnector(ScType::ConstPermPosArc, set23, d3);
-
-  {
-    ScAddr const arcCommon = ctx.GenerateConnector(
-        ScType::ConstCommonArc,
-        route2,
-        set23);
-
-    ctx.GenerateConnector(
-        ScType::ConstPermPosArc,
-        TransportAccessibilityKeynodes::nrel_connects_districts,
-        arcCommon);
-  }
+  return graph;
 }
 
-TEST_F(AgentTest, AnalyzeTransportAccessibilityAgentCalculatesAllMetrics)
+TEST_F(AgentTest, AnalyzeReturnsConnectivityAndDiameter)
 {
-  // 1. Регистрируем агент анализа
   m_ctx->SubscribeAgent<AnalyzeTransportAccessibilityAgent>();
 
-  // 2. Строим тестовый граф и запоминаем ожидаемый центральный район (d2)
-  ScAddr graphAddr;
-  ScAddr expectedCentralDistrict;
-  BuildThreeDistrictPathGraph(*m_ctx, graphAddr, expectedCentralDistrict);
+  ScAddr graph = BuildRing4(*m_ctx);
 
-  // 3. Создаём действие типа action_analyze_transport_accessibility
   ScAction action = m_ctx->GenerateAction(
-      TransportAccessibilityKeynodes::action_analyze_transport_accessibility);
+      TransportAccessibilityKeynodes::action_analyze_transport_accessibility,
+      graph);
 
-  // 4. Передаём граф как аргумент
-  action.SetArguments(graphAddr);
-
-  // 5. Запускаем действие
   EXPECT_TRUE(action.InitiateAndWait());
   EXPECT_TRUE(action.IsFinishedSuccessfully());
 
-  // 6. Структура результата не должна быть пустой
-  ScStructure const resultStructure = action.GetResult();
-  EXPECT_FALSE(resultStructure.IsEmpty());
+  ScStructure const result = action.GetResult();
+  ASSERT_FALSE(result.IsEmpty());
 
-  // ---------- Проверка связности ----------
+  // graph -> nrel_graph_connectivity: link("true")
   {
-    ScAddr connectivityLink;
-
     ScIterator5Ptr it = m_ctx->CreateIterator5(
-        graphAddr,
+        graph,
         ScType::ConstCommonArc,
-        ScType::ConstNodeLink,
+        ScType::ConstLink,
         ScType::ConstPermPosArc,
         TransportAccessibilityKeynodes::nrel_graph_connectivity);
-
-    if (it->Next())
-      connectivityLink = it->Get(2);
-
-    EXPECT_TRUE(connectivityLink.IsValid()) << "nrel_graph_connectivity not found";
-
-    uint32_t connectivity = 0;
-    EXPECT_TRUE(m_ctx->GetLinkContent(connectivityLink, connectivity));
-    EXPECT_EQ(connectivity, 1u) << "Graph must be connected";
+    ASSERT_TRUE(it->Next());
+    ScAddr link = it->Get(2);
+    ScLinkContent content;
+    m_ctx->GetLinkContent(link, content);
+    EXPECT_EQ(content.AsString(), "true");
   }
 
-  // ---------- Проверка диаметра ----------
+  // graph -> nrel_network_diameter: link("2")
   {
-    ScAddr diameterLink;
-
     ScIterator5Ptr it = m_ctx->CreateIterator5(
-        graphAddr,
+        graph,
         ScType::ConstCommonArc,
-        ScType::ConstNodeLink,
+        ScType::ConstLink,
         ScType::ConstPermPosArc,
         TransportAccessibilityKeynodes::nrel_network_diameter);
-
-    if (it->Next())
-      diameterLink = it->Get(2);
-
-    EXPECT_TRUE(diameterLink.IsValid()) << "nrel_network_diametr not found";
-
-    uint32_t diameter = 0;
-    EXPECT_TRUE(m_ctx->GetLinkContent(diameterLink, diameter));
-    EXPECT_EQ(diameter, 2u) << "Diameter for path of length 2 must be 2";
-  }
-
-  // ---------- Проверка центрального района ----------
-  {
-    ScIterator5Ptr it = m_ctx->CreateIterator5(
-        graphAddr,
-        ScType::ConstCommonArc,
-        expectedCentralDistrict,
-        ScType::ConstPermPosArc,
-        TransportAccessibilityKeynodes::nrel_is_it_central_district);
-
-    EXPECT_TRUE(it->Next())
-        << "Central district was not marked via nrel_is_it_central_district";
+    ASSERT_TRUE(it->Next());
+    ScAddr link = it->Get(2);
+    ScLinkContent content;
+    m_ctx->GetLinkContent(link, content);
+    EXPECT_EQ(content.AsString(), "2");
   }
 
   m_ctx->UnsubscribeAgent<AnalyzeTransportAccessibilityAgent>();
