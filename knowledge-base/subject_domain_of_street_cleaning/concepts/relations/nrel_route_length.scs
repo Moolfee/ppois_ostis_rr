@@ -1,0 +1,11 @@
+nrel_route_length
+<- sc_node_non_role_relation;
+=> nrel_main_idtf:
+    [длина маршрута*]
+    (*
+        <- lang_ru;;
+    *);
+=> nrel_first_domain:
+    sc_node_tuple;
+=> nrel_second_domain:
+    sc_link;;

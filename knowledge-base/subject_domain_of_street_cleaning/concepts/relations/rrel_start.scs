@@ -1,0 +1,11 @@
+rrel_start
+<- sc_node_role_relation;
+=> nrel_main_idtf:
+    [начало маршрута']
+    (*
+        <- lang_ru;;
+    *);
+=> nrel_first_domain:
+    concept_street_network;
+=> nrel_second_domain:
+    concept_intersection;;
