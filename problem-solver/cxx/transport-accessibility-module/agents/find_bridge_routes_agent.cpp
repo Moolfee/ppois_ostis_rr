@@ -57,26 +57,32 @@ ScResult FindBridgeRoutesAgent::DoProgram(ScAction & action)
 
   // 4. Собираем маршруты
   std::vector<ScAddr> routes;
-
+  auto collectRoutes = [&](ScType arcType)
   {
     ScIterator3Ptr it = m_context.CreateIterator3(
         graphAddr,
-        ScType::ConstPermPosArc,
-        ScType::ConstNode);
+        arcType,
+        ScType::Node);
 
     while (it->Next())
     {
       ScAddr elem = it->Get(2);
 
-      ScIterator3Ptr itRouteClass = m_context.CreateIterator3(
+      ScIterator3Ptr itRouteClassConst = m_context.CreateIterator3(
           TransportAccessibilityKeynodes::concept_public_transport_route,
           ScType::ConstPermPosArc,
           elem);
+      ScIterator3Ptr itRouteClassVar = m_context.CreateIterator3(
+          TransportAccessibilityKeynodes::concept_public_transport_route,
+          ScType::VarPermPosArc,
+          elem);
 
-      if (itRouteClass->Next())
+      if (itRouteClassConst->Next() || itRouteClassVar->Next())
         routes.push_back(elem);
     }
-  }
+  };
+  collectRoutes(ScType::ConstPermPosArc);
+  collectRoutes(ScType::VarPermPosArc);
 
   // 5. Строим карту (u,v) -> маршруты
   std::map<std::pair<int,int>, std::vector<ScAddr>> edgeToRoutes;
@@ -86,31 +92,71 @@ ScResult FindBridgeRoutesAgent::DoProgram(ScAction & action)
 
   for (ScAddr const & route : routes)
   {
-    ScAddr districtSet;
+    std::vector<ScAddr> pair;
 
+    // через множество
+    {
+      ScAddr districtSet;
+      auto tryFindSet = [&](ScType arcTypeRole) -> bool
+      {
+        ScIterator5Ptr it = m_context.CreateIterator5(
+            route,
+            ScType::ConstCommonArc,
+            ScType::Node,
+            arcTypeRole,
+            TransportAccessibilityKeynodes::nrel_connects_districts);
+        if (it->Next())
+        {
+          districtSet = it->Get(2);
+          return true;
+        }
+        return false;
+      };
+
+      if (tryFindSet(ScType::ConstPermPosArc) || tryFindSet(ScType::VarPermPosArc))
+      {
+        auto collectFromSet = [&](ScType arcType)
+        {
+          ScIterator3Ptr it = m_context.CreateIterator3(
+              districtSet,
+              arcType,
+              ScType::Node);
+          while (it->Next())
+            pair.push_back(it->Get(2));
+        };
+        collectFromSet(ScType::ConstPermPosArc);
+        collectFromSet(ScType::VarPermPosArc);
+      }
+    }
+
+    // прямые дуги
+    auto collectDirect = [&](ScType arcCommonType, ScType arcRoleType)
     {
       ScIterator5Ptr it = m_context.CreateIterator5(
           route,
-          ScType::ConstCommonArc,
-          ScType::ConstNode,
-          ScType::ConstPermPosArc,
+          arcCommonType,
+          ScType::Node,
+          arcRoleType,
           TransportAccessibilityKeynodes::nrel_connects_districts);
-
-      if (!it->Next()) continue;
-      districtSet = it->Get(2);
-    }
-
-    std::vector<ScAddr> pair;
-
-    {
-      ScIterator3Ptr it = m_context.CreateIterator3(
-          districtSet,
-          ScType::ConstPermPosArc,
-          ScType::ConstNode);
-
       while (it->Next())
-        pair.push_back(it->Get(2));
-    }
+      {
+        ScAddr cand = it->Get(2);
+        ScIterator3Ptr itDistrictClassConst = m_context.CreateIterator3(
+            TransportAccessibilityKeynodes::concept_district,
+            ScType::ConstPermPosArc,
+            cand);
+        ScIterator3Ptr itDistrictClassVar = m_context.CreateIterator3(
+            TransportAccessibilityKeynodes::concept_district,
+            ScType::VarPermPosArc,
+            cand);
+        if (itDistrictClassConst->Next() || itDistrictClassVar->Next())
+          pair.push_back(cand);
+      }
+    };
+    collectDirect(ScType::ConstCommonArc, ScType::ConstPermPosArc);
+    collectDirect(ScType::ConstCommonArc, ScType::VarPermPosArc);
+    collectDirect(ScType::VarCommonArc, ScType::ConstPermPosArc);
+    collectDirect(ScType::VarCommonArc, ScType::VarPermPosArc);
 
     if (pair.size() != 2) continue;
 

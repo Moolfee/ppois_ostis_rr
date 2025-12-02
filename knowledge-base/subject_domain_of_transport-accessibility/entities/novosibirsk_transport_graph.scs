@@ -1,38 +1,32 @@
-novosibirsk_transport_complicated_graph
+novosibirsk_transport_graph
 <- concept_transport_infrastructure_element;
 => nrel_main_idtf:
-    [граф транспортных связей районов Новосибирска]
+    [граф транспортных связей районов Новосибирска (базовый)]
     (*
         <- lang_ru;;
     *);
-    [graph of transport connections of Novosibirsk districts]
+    [graph of transport connections of Novosibirsk districts (base)]
     (*
         <- lang_en;;
     *);;
 
-novosibirsk_transport_complicated_graph <- sc_node_structure;;
+novosibirsk_transport_graph <- sc_node_structure;;
 
-novosibirsk_transport_complicated_graph -> centralny;;
-novosibirsk_transport_complicated_graph -> kirovskiy;;
-novosibirsk_transport_complicated_graph -> leninskiy;;
-novosibirsk_transport_complicated_graph -> sovetskiy;;
-novosibirsk_transport_complicated_graph -> oktyabrskiy;;
-novosibirsk_transport_complicated_graph -> zaeltsovskiy;;
-novosibirsk_transport_complicated_graph -> dzerzhinskiy;;
-novosibirsk_transport_complicated_graph -> zheleznodorozhnyy;;
+novosibirsk_transport_graph -> centralny;;
+novosibirsk_transport_graph -> kirovskiy;;
+novosibirsk_transport_graph -> leninskiy;;
+novosibirsk_transport_graph -> sovetskiy;;
+novosibirsk_transport_graph -> oktyabrskiy;;
+novosibirsk_transport_graph -> zaeltsovskiy;;
+novosibirsk_transport_graph -> dzerzhinskiy;;
+novosibirsk_transport_graph -> zheleznodorozhnyy;;
 
-novosibirsk_transport_complicated_graph -> route_bus_5;;
-novosibirsk_transport_complicated_graph -> route_metro_line1;;
-novosibirsk_transport_complicated_graph -> route_tram_4;;
-novosibirsk_transport_complicated_graph -> route_bus_12;;
-novosibirsk_transport_complicated_graph -> route_bus_7;;
-novosibirsk_transport_complicated_graph -> route_bus_15;;
-novosibirsk_transport_complicated_graph -> route_bus_23;;
-novosibirsk_transport_complicated_graph -> route_bus_31;;
-novosibirsk_transport_complicated_graph -> route_bus_42;;
-novosibirsk_transport_complicated_graph -> route_bus_50;;
-novosibirsk_transport_complicated_graph -> route_bus_18;;
-novosibirsk_transport_complicated_graph -> route_tram_6;;
-novosibirsk_transport_complicated_graph -> route_bus_16;;
-novosibirsk_transport_complicated_graph -> route_bus_20;;
-novosibirsk_transport_complicated_graph -> route_bus_60;;
+novosibirsk_transport_graph -> route_bus_5;;
+novosibirsk_transport_graph -> route_metro_line1;;
+novosibirsk_transport_graph -> route_bus_42;;
+novosibirsk_transport_graph -> route_bus_18;;
+novosibirsk_transport_graph -> route_bus_12;;
+novosibirsk_transport_graph -> route_bus_7;;
+novosibirsk_transport_graph -> route_bus_15;;
+novosibirsk_transport_graph -> route_tram_4;;
+novosibirsk_transport_graph -> route_bus_23;;

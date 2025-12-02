@@ -10,6 +10,7 @@
 #include "utils/BuildGraphFromSc.hpp"
 
 #include <vector>
+#include <string>
 
 ScAddr CalculateNetworkDiameterAgent::GetActionClass() const
 {
@@ -46,8 +47,20 @@ ScResult CalculateNetworkDiameterAgent::DoProgram(ScAction & action)
   int const INF = 1000000000;
   std::vector<std::vector<int>> dist = g.FloydWarshall(INF);
 
-  // 4. Вычисляем диаметр графа
+  // 4. Вычисляем диаметр графа и проверяем связность
   int diameter = g.Diameter(dist, INF);
+  bool hasInf = false;
+  for (int i = 0; i < n && !hasInf; ++i)
+  {
+    for (int j = 0; j < n; ++j)
+    {
+      if (dist[i][j] == INF)
+      {
+        hasInf = true;
+        break;
+      }
+    }
+  }
 
   // 5. Формируем SC-структуру результата
   ScStructure result = m_context.GenerateStructure();
@@ -56,9 +69,13 @@ ScResult CalculateNetworkDiameterAgent::DoProgram(ScAction & action)
   ScAddr resultNode = m_context.GenerateNode(ScType::ConstNodeStructure);
   result << resultNode;
 
-  // 5.1. Link с численным значением диаметра
+  // 5.1. Link со значением диаметра
   ScAddr diameterLink = m_context.GenerateLink();
-  m_context.SetLinkContent(diameterLink, diameter);
+  // sc-web отображает строковый контент линка
+  if (hasInf)
+    m_context.SetLinkContent(diameterLink, std::string("undefined (disconnected graph)"));
+  else
+    m_context.SetLinkContent(diameterLink, std::to_string(diameter));
 
   // graphAddr => nrel_network_diameter: diameterLink;;
   ScAddr arcCommon = m_context.GenerateConnector(

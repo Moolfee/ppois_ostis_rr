@@ -6,10 +6,9 @@
 #include <sc-memory/sc_link.hpp>
 
 #include "keynodes/transport_accessibility_keynodes.hpp"
+#include "utils/BuildGraphFromSc.hpp"
 
 #include <vector>
-#include <map>
-#include <stack>
 
 ScAddr CheckGraphConnectivityAgent::GetActionClass() const
 {
@@ -29,126 +28,20 @@ ScResult CheckGraphConnectivityAgent::DoProgram(ScAction & action)
     return action.FinishWithError();
   }
 
-  // --- 2. Собираем список районов и маршрутов, которые входят в граф ---
-  std::vector<ScAddr> districts;
-  std::vector<ScAddr> routes;
+  // --- 2. Собираем граф через общий BuildGraphFromSc (учитывает const/var дуги и прямые связи)
+  GraphFromScResult gr = BuildGraphFromSc(m_context, graphAddr);
+  Graph & g = gr.graph;
+  std::vector<ScAddr> const & districts = gr.districts;
 
-  {
-    ScIterator3Ptr it = m_context.CreateIterator3(
-        graphAddr,
-        ScType::ConstPermPosArc,
-        ScType::ConstNode);
-
-    while (it->Next())
-    {
-      ScAddr elem = it->Get(2);
-
-      // район?
-      if (m_context.CheckConnector(
-              TransportAccessibilityKeynodes::concept_district,
-              elem,
-              ScType::ConstPermPosArc))
-      {
-        districts.push_back(elem);
-        continue;
-      }
-
-      // маршрут?
-      if (m_context.CheckConnector(
-              TransportAccessibilityKeynodes::concept_public_transport_route,
-              elem,
-              ScType::ConstPermPosArc))
-      {
-        routes.push_back(elem);
-        continue;
-      }
-    }
-  }
-
-  if (districts.empty())
+  int n = g.n;
+  if (n == 0)
   {
     m_logger.Error("No districts found inside graph structure");
     return action.FinishWithError();
   }
 
-  std::map<ScAddr, int, ScAddrLessFunc> districtIndex;
-  for (int i = 0; i < (int)districts.size(); i++)
-    districtIndex[districts[i]] = i;
-
-  int n = districts.size();
-
-  std::vector<std::vector<int>> adj(n);
-
-  for (ScAddr const & route : routes)
-  {
-    ScAddr connectsSet;
-
-    {
-      ScIterator5Ptr it = m_context.CreateIterator5(
-          route,
-          ScType::ConstCommonArc,
-          ScType::ConstNode,
-          ScType::ConstPermPosArc,
-          TransportAccessibilityKeynodes::nrel_connects_districts);
-
-      if (!it->Next())
-        continue; 
-
-      connectsSet = it->Get(2);
-    }
-
-    std::vector<ScAddr> pairDistricts;
-
-    {
-      ScIterator3Ptr it = m_context.CreateIterator3(
-          connectsSet,
-          ScType::ConstPermPosArc,
-          ScType::ConstNode);
-
-      while (it->Next())
-      {
-        pairDistricts.push_back(it->Get(2));
-      }
-    }
-
-    if (pairDistricts.size() != 2)
-    {
-      m_logger.Warning("Route has invalid number of connected districts (expected 2)");
-      continue;
-    }
-
-    ScAddr d1 = pairDistricts[0];
-    ScAddr d2 = pairDistricts[1];
-
-    if (!districtIndex.count(d1) || !districtIndex.count(d2))
-      continue; 
-    int u = districtIndex[d1];
-    int v = districtIndex[d2];
-
-    adj[u].push_back(v);
-    adj[v].push_back(u);
-  }
-
-  std::vector<bool> visited(n, false);
-
-  std::stack<int> st;
-  st.push(0);
-  visited[0] = true;
-
-  while (!st.empty())
-  {
-    int v = st.top();
-    st.pop();
-
-    for (int to : adj[v])
-    {
-      if (!visited[to])
-      {
-        visited[to] = true;
-        st.push(to);
-      }
-    }
-  }
+  // --- 3. DFS от 0-й вершины
+  std::vector<bool> visited = g.DfsFrom(0);
 
   std::vector<ScAddr> unreachable;
 

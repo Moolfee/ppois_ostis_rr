@@ -60,14 +60,26 @@ ScResult AnalyzeTransportAccessibilityAgent::DoProgram(ScAction & action)
   // 4. Считаем матрицу расстояний
   std::vector<std::vector<int>> dist = g.FloydWarshall(INF);
 
-  // 5. Центральный район
-  int centralIndex = g.FindCentralVertex(dist, INF);
+  // 5. Центральный район (только если связен)
+  int centralIndex = isConnected ? g.FindCentralVertex(dist, INF) : -1;
   ScAddr centralDistrict = ScAddr::Empty;
   if (centralIndex >= 0 && centralIndex < n)
     centralDistrict = districts[centralIndex];
 
   // 6. Диаметр
   int diameter = g.Diameter(dist, INF);
+  bool hasInf = false;
+  for (int i = 0; i < n && !hasInf; ++i)
+  {
+    for (int j = 0; j < n; ++j)
+    {
+      if (dist[i][j] == INF)
+      {
+        hasInf = true;
+        break;
+      }
+    }
+  }
 
   // 7. Мосты (количество)
   std::vector<std::pair<int,int>> bridges = g.FindBridges();
@@ -82,7 +94,7 @@ ScResult AnalyzeTransportAccessibilityAgent::DoProgram(ScAction & action)
   // 8.1. Связность
   {
     ScAddr connectivityLink = m_context.GenerateLink();
-    m_context.SetLinkContent(connectivityLink, isConnected ? 1 : 0);
+    m_context.SetLinkContent(connectivityLink, isConnected ? std::string("true") : std::string("false"));
 
     ScAddr arcCommon = m_context.GenerateConnector(
         ScType::ConstCommonArc,
@@ -116,7 +128,9 @@ ScResult AnalyzeTransportAccessibilityAgent::DoProgram(ScAction & action)
   // 8.3. Диаметр
   {
     ScAddr diameterLink = m_context.GenerateLink();
-    m_context.SetLinkContent(diameterLink, diameter);
+    m_context.SetLinkContent(
+        diameterLink,
+        hasInf ? std::string("undefined (disconnected graph)") : std::to_string(diameter));
 
     ScAddr arcCommon = m_context.GenerateConnector(
         ScType::ConstCommonArc,
@@ -145,7 +159,7 @@ ScResult AnalyzeTransportAccessibilityAgent::DoProgram(ScAction & action)
   // 8.4. Количество мостов (сохраним в link)
   {
     ScAddr bridgesCountLink = m_context.GenerateLink();
-    m_context.SetLinkContent(bridgesCountLink, bridgesCount);
+    m_context.SetLinkContent(bridgesCountLink, std::to_string(bridgesCount));
 
     ScAddr arcCommon = m_context.GenerateConnector(
         ScType::ConstCommonArc,

@@ -301,3 +301,39 @@ route_bus_60
 => nrel_connects_districts:
     oktyabrskiy;
     sovetskiy;;
+
+
+route_bus_70
+<- concept_bus_route;
+<- concept_public_transport_route;
+=> nrel_main_idtf:
+    [автобус №70]
+    (*
+        <- lang_ru;;
+    *);
+    [bus No. 70]
+    (*
+        <- lang_en;;
+    *);
+=> nrel_transport_type: bus;
+=> nrel_connects_districts:
+    centralny;
+    zaeltsovskiy;;
+
+
+route_bus_80
+<- concept_bus_route;
+<- concept_public_transport_route;
+=> nrel_main_idtf:
+    [автобус №80]
+    (*
+        <- lang_ru;;
+    *);
+    [bus No. 80]
+    (*
+        <- lang_en;;
+    *);
+=> nrel_transport_type: bus;
+=> nrel_connects_districts:
+    kirovskiy;
+    dzerzhinskiy;;
