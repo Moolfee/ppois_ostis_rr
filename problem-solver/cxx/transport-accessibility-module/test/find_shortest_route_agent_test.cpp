@@ -161,3 +161,67 @@ TEST_F(AgentTest, FindsAllUndirectedPairs)
 
   m_ctx->UnsubscribeAgent<FindShortestRouteAgent>();
 }
+
+TEST_F(AgentTest, HandlesDisconnectedGraph)
+{
+  m_ctx->SubscribeAgent<FindShortestRouteAgent>();
+
+  ScAddr graph = m_ctx->GenerateNode(ScType::ConstNodeStructure);
+  ScAddr d0 = m_ctx->GenerateNode(ScType::ConstNode);
+  ScAddr d1 = m_ctx->GenerateNode(ScType::ConstNode);
+
+  auto markDistrict = [&](ScAddr const & d)
+  {
+    m_ctx->GenerateConnector(
+        ScType::ConstPermPosArc,
+        TransportAccessibilityKeynodes::concept_district,
+        d);
+    m_ctx->GenerateConnector(ScType::ConstPermPosArc, graph, d);
+  };
+  markDistrict(d0);
+  markDistrict(d1);
+  // no routes => unreachable pair
+
+  ScAction action =
+      m_ctx->GenerateAction(TransportAccessibilityKeynodes::action_find_shortest_route);
+  action.SetArguments(graph);
+
+  ASSERT_TRUE(action.InitiateAndWait());
+  ASSERT_TRUE(action.IsFinishedSuccessfully());
+
+  ScStructure const result = action.GetResult();
+  ASSERT_FALSE(result.IsEmpty());
+
+  // find the only pair and ensure "no path"
+  ScAddr tableNode;
+  {
+    ScIterator5Ptr it = m_ctx->CreateIterator5(
+        graph,
+        ScType::ConstCommonArc,
+        ScType::ConstNode,
+        ScType::ConstPermPosArc,
+        TransportAccessibilityKeynodes::nrel_shortest_distance);
+    ASSERT_TRUE(it->Next());
+    tableNode = it->Get(2);
+  }
+
+  ScIterator3Ptr it = m_ctx->CreateIterator3(
+      tableNode,
+      ScType::ConstPermPosArc,
+      ScType::ConstNodeStructure);
+  ASSERT_TRUE(it->Next());
+  ScAddr pairNode = it->Get(2);
+
+  ScIterator5Ptr itDist = m_ctx->CreateIterator5(
+      pairNode,
+      ScType::ConstCommonArc,
+      ScType::ConstNodeLink,
+      ScType::ConstPermPosArc,
+      TransportAccessibilityKeynodes::nrel_shortest_distance);
+  ASSERT_TRUE(itDist->Next());
+  std::string val;
+  m_ctx->GetLinkContent(itDist->Get(2), val);
+  EXPECT_NE(val.find("no path"), std::string::npos);
+
+  m_ctx->UnsubscribeAgent<FindShortestRouteAgent>();
+}

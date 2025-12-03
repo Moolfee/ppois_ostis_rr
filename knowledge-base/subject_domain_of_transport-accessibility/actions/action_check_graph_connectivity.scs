@@ -1,0 +1,14 @@
+action_check_graph_connectivity
+<- sc_node_class;
+<- concept_class;
+=> nrel_main_idtf:
+    [действие проверки связности транспортной сети]
+    (*
+        <- lang_ru;;
+    *);
+    [action to check connectivity of transport network]
+    (*
+        <- lang_en;;
+    *);
+<= nrel_inclusion:
+    concept_route_action;;
