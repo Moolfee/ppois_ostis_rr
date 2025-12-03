@@ -162,6 +162,68 @@ TEST_F(AgentTest, FindsAllUndirectedPairs)
   m_ctx->UnsubscribeAgent<FindShortestRouteAgent>();
 }
 
+TEST_F(AgentTest, ShortestRouteEmptyGraphFinishesWithEmptyResult)
+{
+  m_ctx->SubscribeAgent<FindShortestRouteAgent>();
+
+  ScAddr graph = m_ctx->GenerateNode(ScType::ConstNodeStructure);  // no districts
+
+  ScAction action =
+      m_ctx->GenerateAction(TransportAccessibilityKeynodes::action_find_shortest_route);
+  action.SetArguments(graph);
+
+  ASSERT_TRUE(action.InitiateAndWait());
+  ASSERT_TRUE(action.IsFinishedSuccessfully());
+
+  ScStructure const result = action.GetResult();
+  EXPECT_TRUE(result.IsEmpty());
+
+  m_ctx->UnsubscribeAgent<FindShortestRouteAgent>();
+}
+
+TEST_F(AgentTest, SingleDistrictProducesNoPairsMessage)
+{
+  m_ctx->SubscribeAgent<FindShortestRouteAgent>();
+
+  ScAddr graph = m_ctx->GenerateNode(ScType::ConstNodeStructure);
+  ScAddr d0 = m_ctx->GenerateNode(ScType::ConstNode);
+  m_ctx->GenerateConnector(
+      ScType::ConstPermPosArc,
+      TransportAccessibilityKeynodes::concept_district,
+      d0);
+  m_ctx->GenerateConnector(ScType::ConstPermPosArc, graph, d0);
+
+  ScAction action =
+      m_ctx->GenerateAction(TransportAccessibilityKeynodes::action_find_shortest_route);
+  action.SetArguments(graph);
+
+  ASSERT_TRUE(action.InitiateAndWait());
+  ASSERT_TRUE(action.IsFinishedSuccessfully());
+
+  ScStructure const result = action.GetResult();
+  ASSERT_FALSE(result.IsEmpty());
+
+  // message link "no district pairs"
+  bool foundMsg = false;
+  ScIterator3Ptr it = m_ctx->CreateIterator3(
+      result,
+      ScType::ConstPermPosArc,
+      ScType::ConstNodeLink);
+  while (it->Next())
+  {
+    std::string content;
+    m_ctx->GetLinkContent(it->Get(2), content);
+    if (content.find("no district pairs") != std::string::npos)
+    {
+      foundMsg = true;
+      break;
+    }
+  }
+  EXPECT_TRUE(foundMsg);
+
+  m_ctx->UnsubscribeAgent<FindShortestRouteAgent>();
+}
+
 TEST_F(AgentTest, HandlesDisconnectedGraph)
 {
   m_ctx->SubscribeAgent<FindShortestRouteAgent>();

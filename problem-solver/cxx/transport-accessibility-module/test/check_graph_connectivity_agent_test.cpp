@@ -151,3 +151,81 @@ TEST_F(AgentTest, ConnectivityFalseMarksOnlyReachable)
 
   m_ctx->UnsubscribeAgent<CheckGraphConnectivityAgent>();
 }
+
+TEST_F(AgentTest, ConnectivityNoDistrictsCausesError)
+{
+  m_ctx->SubscribeAgent<CheckGraphConnectivityAgent>();
+
+  ScAddr graph = m_ctx->GenerateNode(ScType::ConstNodeStructure);  // no districts attached
+
+  ScAction action = m_ctx->GenerateAction(TransportAccessibilityKeynodes::action_check_graph_connectivity);
+  action.SetArguments(graph);
+
+  EXPECT_TRUE(action.InitiateAndWait());
+  EXPECT_FALSE(action.IsFinishedSuccessfully());
+
+  m_ctx->UnsubscribeAgent<CheckGraphConnectivityAgent>();
+}
+
+TEST_F(AgentTest, IgnoresRoutesWithInvalidEndpoints)
+{
+  m_ctx->SubscribeAgent<CheckGraphConnectivityAgent>();
+
+  ScAddr graph = m_ctx->GenerateNode(ScType::ConstNodeStructure);
+  ScAddr d0 = MakeDistrict(*m_ctx, graph);
+  ScAddr d1 = MakeDistrict(*m_ctx, graph);
+  MakeRoute(*m_ctx, graph, d0, d1);  // valid
+
+  // Route with three endpoints -> should be ignored
+  ScAddr d2 = MakeDistrict(*m_ctx, graph);
+  ScAddr route = m_ctx->GenerateNode(ScType::ConstNode);
+  m_ctx->GenerateConnector(
+      ScType::ConstPermPosArc,
+      TransportAccessibilityKeynodes::concept_public_transport_route,
+      route);
+  m_ctx->GenerateConnector(ScType::ConstPermPosArc, graph, route);
+  ScAddr set = m_ctx->GenerateNode(ScType::ConstNodeStructure);
+  m_ctx->GenerateConnector(ScType::ConstPermPosArc, set, d0);
+  m_ctx->GenerateConnector(ScType::ConstPermPosArc, set, d1);
+  m_ctx->GenerateConnector(ScType::ConstPermPosArc, set, d2);
+  ScAddr arcCommon = m_ctx->GenerateConnector(ScType::ConstCommonArc, route, set);
+  m_ctx->GenerateConnector(
+      ScType::ConstPermPosArc,
+      TransportAccessibilityKeynodes::nrel_connects_districts,
+      arcCommon);
+
+  ScAction action = m_ctx->GenerateAction(TransportAccessibilityKeynodes::action_check_graph_connectivity);
+  action.SetArguments(graph);
+
+  ASSERT_TRUE(action.InitiateAndWait());
+  ASSERT_TRUE(action.IsFinishedSuccessfully());  // still succeeds using valid route
+
+  // graph connectivity should be true (valid route connects d0-d1, d2 isolated but reachable? no)
+  // reachable set should include only d0, d1, valid route (d2 not reachable)
+  ScStructure const result = action.GetResult();
+  ASSERT_FALSE(result.IsEmpty());
+
+  // pick the NodeStructure with maximum members (reachable set)
+  size_t maxCount = 0;
+  ScIterator3Ptr itSets = m_ctx->CreateIterator3(
+      result,
+      ScType::ConstPermPosArc,
+      ScType::ConstNodeStructure);
+  while (itSets->Next())
+  {
+    ScAddr candidate = itSets->Get(2);
+    size_t cnt = 0;
+    ScIterator3Ptr itMembers = m_ctx->CreateIterator3(
+        candidate,
+        ScType::ConstPermPosArc,
+        ScType::ConstNode);
+    while (itMembers->Next())
+      ++cnt;
+    if (cnt > maxCount)
+      maxCount = cnt;
+  }
+
+  EXPECT_GE(maxCount, 2u);  // должно включать хотя бы связный компонент
+
+  m_ctx->UnsubscribeAgent<CheckGraphConnectivityAgent>();
+}

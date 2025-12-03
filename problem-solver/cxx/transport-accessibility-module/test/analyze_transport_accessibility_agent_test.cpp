@@ -264,3 +264,113 @@ TEST_F(AgentTest, DetectsBridgeRoutesAndCount)
 
   m_ctx->UnsubscribeAgent<AnalyzeTransportAccessibilityAgent>();
 }
+
+TEST_F(AgentTest, AnalyzeEmptyGraphReturnsEmptyResult)
+{
+  m_ctx->SubscribeAgent<AnalyzeTransportAccessibilityAgent>();
+
+  ScAddr graph = m_ctx->GenerateNode(ScType::ConstNodeStructure);
+
+  ScAction action =
+      m_ctx->GenerateAction(TransportAccessibilityKeynodes::action_analyze_transport_accessibility);
+  action.SetArguments(graph);
+
+  ASSERT_TRUE(action.InitiateAndWait());
+  ASSERT_TRUE(action.IsFinishedSuccessfully());
+
+  ScStructure const result = action.GetResult();
+  EXPECT_TRUE(result.IsEmpty());
+
+  m_ctx->UnsubscribeAgent<AnalyzeTransportAccessibilityAgent>();
+}
+
+TEST_F(AgentTest, SkipsRoutesWithBadEndpoints)
+{
+  m_ctx->SubscribeAgent<AnalyzeTransportAccessibilityAgent>();
+
+  ScAddr graph = m_ctx->GenerateNode(ScType::ConstNodeStructure);
+  ScAddr d0 = m_ctx->GenerateNode(ScType::ConstNode);
+  ScAddr d1 = m_ctx->GenerateNode(ScType::ConstNode);
+  ScAddr d2 = m_ctx->GenerateNode(ScType::ConstNode);
+
+  auto markDistrict = [&](ScAddr const & d)
+  {
+    m_ctx->GenerateConnector(
+        ScType::ConstPermPosArc,
+        TransportAccessibilityKeynodes::concept_district,
+        d);
+    m_ctx->GenerateConnector(ScType::ConstPermPosArc, graph, d);
+  };
+  markDistrict(d0);
+  markDistrict(d1);
+  markDistrict(d2);
+
+  // valid route d0-d1
+  auto addRoute = [&](ScAddr const & a, ScAddr const & b, bool markConcept = true) -> ScAddr
+  {
+    ScAddr route = m_ctx->GenerateNode(ScType::ConstNode);
+    if (markConcept)
+    {
+      m_ctx->GenerateConnector(
+          ScType::ConstPermPosArc,
+          TransportAccessibilityKeynodes::concept_public_transport_route,
+          route);
+    }
+    m_ctx->GenerateConnector(ScType::ConstPermPosArc, graph, route);
+    ScAddr set = m_ctx->GenerateNode(ScType::ConstNodeStructure);
+    m_ctx->GenerateConnector(ScType::ConstPermPosArc, set, a);
+    m_ctx->GenerateConnector(ScType::ConstPermPosArc, set, b);
+    ScAddr arcCommon = m_ctx->GenerateConnector(ScType::ConstCommonArc, route, set);
+    m_ctx->GenerateConnector(
+        ScType::ConstPermPosArc,
+        TransportAccessibilityKeynodes::nrel_connects_districts,
+        arcCommon);
+    return route;
+  };
+  addRoute(d0, d1);  // valid
+
+  // malformed route: three endpoints -> should be skipped when mapping routes
+  {
+    ScAddr route = m_ctx->GenerateNode(ScType::ConstNode);
+    m_ctx->GenerateConnector(
+        ScType::ConstPermPosArc,
+        TransportAccessibilityKeynodes::concept_public_transport_route,
+        route);
+    m_ctx->GenerateConnector(ScType::ConstPermPosArc, graph, route);
+    ScAddr set = m_ctx->GenerateNode(ScType::ConstNodeStructure);
+    m_ctx->GenerateConnector(ScType::ConstPermPosArc, set, d0);
+    m_ctx->GenerateConnector(ScType::ConstPermPosArc, set, d1);
+    m_ctx->GenerateConnector(ScType::ConstPermPosArc, set, d2);
+    ScAddr arcCommon = m_ctx->GenerateConnector(ScType::ConstCommonArc, route, set);
+    m_ctx->GenerateConnector(
+        ScType::ConstPermPosArc,
+        TransportAccessibilityKeynodes::nrel_connects_districts,
+        arcCommon);
+  }
+
+  ScAction action =
+      m_ctx->GenerateAction(TransportAccessibilityKeynodes::action_analyze_transport_accessibility);
+  action.SetArguments(graph);
+
+  ASSERT_TRUE(action.InitiateAndWait());
+  ASSERT_TRUE(action.IsFinishedSuccessfully());
+
+  ScStructure const result = action.GetResult();
+  ASSERT_FALSE(result.IsEmpty());
+
+  // connectivity should be false because d2 is unreachable (invalid route ignored)
+  {
+    ScIterator5Ptr it = m_ctx->CreateIterator5(
+        graph,
+        ScType::ConstCommonArc,
+        ScType::ConstNodeLink,
+        ScType::ConstPermPosArc,
+        TransportAccessibilityKeynodes::nrel_graph_connectivity);
+    ASSERT_TRUE(it->Next());
+    std::string content;
+    m_ctx->GetLinkContent(it->Get(2), content);
+    EXPECT_EQ(content, "false");
+  }
+
+  m_ctx->UnsubscribeAgent<AnalyzeTransportAccessibilityAgent>();
+}
